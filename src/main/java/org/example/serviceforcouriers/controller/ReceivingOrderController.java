@@ -7,6 +7,7 @@ import org.example.serviceforcouriers.entity.Order;
 import org.example.serviceforcouriers.service.OrderService;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,9 +33,16 @@ public class ReceivingOrderController {
 
     @PostMapping("/orders/{productId}")
     public String orderRequestStatus (@RequestBody OrderRequestStatus orderRequestStatus) {
-        Order order = orderService.getOrderById(orderRequestStatus.getProductId());
-        order.setSoldStatus(orderRequestStatus.isSoldStatus());
+        orderService.saveSoldStatus(
+                orderRequestStatus.getProductId(),
+                orderRequestStatus.isSoldStatus()
+        );
         return "success";
+    }
+
+    @PostMapping("/orders")
+    public Order createOrder (String product, String customerName, String executorName, String address, BigDecimal purchasesPrice, BigDecimal purchasesSell) {
+        return orderService.newOrder(product, customerName, executorName, address, purchasesPrice, purchasesSell);
     }
 
 }

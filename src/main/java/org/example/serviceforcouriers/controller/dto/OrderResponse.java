@@ -3,6 +3,8 @@ package org.example.serviceforcouriers.controller.dto;
 import lombok.Data;
 import org.example.serviceforcouriers.entity.Order;
 
+import java.math.BigDecimal;
+
 @Data
 public class OrderResponse {
 
@@ -16,7 +18,7 @@ public class OrderResponse {
 
     private String address;
 
-    private Character purchasesSell;
+    private BigDecimal purchasesSell;
 
     private boolean soldStatus;
 
