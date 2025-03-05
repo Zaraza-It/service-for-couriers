@@ -23,7 +23,7 @@ public class Emoji implements LongPollingSingleThreadUpdateConsumer {
     private static final Logger log = LoggerFactory.getLogger(Emoji.class);
     private final String command = "/start";
    private final String buttonOrder = "Заказать";
-   TelegramClient telegramClient = new OkHttpTelegramClient("7429114213:AAE2-zlkX3fzcYUMyqxyFU83cJKMTLLXXyc");
+   TelegramClient telegramClient = new OkHttpTelegramClient("");
     @Override
     public void consume(List<Update> updates) {
         LongPollingSingleThreadUpdateConsumer.super.consume(updates);
