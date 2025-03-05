@@ -1,6 +1,7 @@
 package org.example.serviceforcouriers.controller.dto;
 
 import lombok.Data;
+import org.example.serviceforcouriers.entity.Order;
 
 @Data
 public class OrderResponse {
@@ -19,4 +20,6 @@ public class OrderResponse {
 
     private boolean soldStatus;
 
+    public OrderResponse(Order orderById) {
+    }
 }
