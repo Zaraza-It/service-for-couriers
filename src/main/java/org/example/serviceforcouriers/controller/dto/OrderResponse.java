@@ -15,8 +15,6 @@ public class OrderResponse {
 
     private String address;
 
-    private Character purchasesPrice;
-
     private Character purchasesSell;
 
     private boolean soldStatus;

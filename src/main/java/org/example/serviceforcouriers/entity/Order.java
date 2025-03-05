@@ -1,6 +1,5 @@
 package org.example.serviceforcouriers.entity;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
