@@ -2,17 +2,14 @@ spring:
   jpa:
     database: POSTGRESQL
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate # или none для production
+    show-sql: true
     properties:
       hibernate:
-        temp:
-          use_jdbc_metadata_defaults: false
+        format_sql: true
   datasource:
-    platform: postgres
-    url: jdbc:postgresql://localhost:5432/springhomework
+    url: jdbc:postgresql://localhost:5432/serviceforcouriers
     username: postgres
-    password: playlbsgnet12
+    password: ${DB_PASSWORD} # Используйте переменную окружения
     driver-class-name: org.postgresql.Driver
 
-server:
-  port: 9999
