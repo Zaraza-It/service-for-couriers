@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.serviceforcouriers.controller.ReceivingOrderController;
+import org.example.serviceforcouriers.controller.dto.OrderRequest;
 import org.example.serviceforcouriers.entity.Order;
 import org.example.serviceforcouriers.exceptions.ProductNotFoundException;
 import org.example.serviceforcouriers.repository.OrderRepository;
@@ -47,6 +48,21 @@ public class OrderService {
         return orderRepository.save(new Order(product, customerName, executorName, address, purchasesPrice, purchasesSell));
     }
 
-
+    public void createOrder(OrderRequest request) {
+        try {
+            if (orderRepository.findOrderByProduct(request.getProduct()) == null) {
+               Order order =  new Order()
+                order.setCustomerName(request.getCustomerName());
+                order.setExecutorName(request.getExecutorName());
+                order.setAddress(request.getAddress());
+                order.setPurchasesPrice(request.getPurchasesPrice());
+                order.setPurchasesSell(request.getPurchasesSell());
+                order.setProduct(request.getProduct());
+                orderRepository.save(order);
+            }
+        }catch (Exception e) {
+            logger.error(e);
+        }
+    }
 
 }

@@ -7,7 +7,11 @@ import org.example.botservice.dto.Order;
 import org.example.botservice.service.BotService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
+import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
+import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -21,16 +25,19 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.util.List;
-@RequiredArgsConstructor
-public class MBot implements LongPollingSingleThreadUpdateConsumer {
-    private static final Logger log = LoggerFactory.getLogger(MBot.class);
+@Component
+public class MBot implements LongPollingSingleThreadUpdateConsumer, SpringLongPollingBot {
     private final String command = "/start";
+    @Autowired
     private final OrderRepository orderRepository;
-    private final BotService botService;
-
-
+    private final TelegramClient telegramClient;
    private final String buttonOrder = "Заказать";
-   TelegramClient telegramClient = new OkHttpTelegramClient("7429114213:AAE2-zlkX3fzcYUMyqxyFU83cJKMTLLXXyc");
+
+   public MBot(OrderRepository orderRepository) {
+       this.orderRepository = orderRepository;
+       telegramClient = new OkHttpTelegramClient(getBotToken());
+   }
+
     @Override
     public void consume(List<Update> updates) {
         LongPollingSingleThreadUpdateConsumer.super.consume(updates);
@@ -108,5 +115,15 @@ public class MBot implements LongPollingSingleThreadUpdateConsumer {
              }
 
         }
+    }
+
+    @Override
+    public String getBotToken() {
+        return "7429114213:AAE2-zlkX3fzcYUMyqxyFU83cJKMTLLXXyc";
+    }
+
+    @Override
+    public LongPollingUpdateConsumer getUpdatesConsumer() {
+        return this;
     }
 }

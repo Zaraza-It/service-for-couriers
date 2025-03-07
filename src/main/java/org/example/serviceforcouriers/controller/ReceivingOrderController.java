@@ -59,22 +59,14 @@ public class ReceivingOrderController {
         return null;
     }
 
-    // Работает
-    @PostMapping
-    public Order createOrder(@RequestBody OrderRequest orderRequest) {
+    // Работает // Изменил код
+    @PostMapping("/create")
+    public void createOrder(@RequestBody OrderRequest orderRequest) {
         try {
-            return orderService.newOrder(
-                    orderRequest.getProduct(),
-                    orderRequest.getCustomerName(),
-                    orderRequest.getExecutorName(),
-                    orderRequest.getAddress(),
-                    orderRequest.getPurchasesPrice(),
-                    orderRequest.getPurchasesSell()
-            );
+            orderService.createOrder(orderRequest);
         } catch (Exception e) {
             logger.error(e);
         }
-        return null;
     }
 
 }

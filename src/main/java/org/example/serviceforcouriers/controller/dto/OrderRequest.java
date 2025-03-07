@@ -15,11 +15,6 @@ public class OrderRequest {
     private BigDecimal purchasesPrice;
     private BigDecimal purchasesSell;
 
-    @Nullable
-    private Boolean soldStatus;
 
-    public void setSoldStatus(@Nullable Boolean soldStatus) {
-        this.soldStatus = soldStatus;
-    }
 
 }
