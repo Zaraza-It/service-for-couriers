@@ -2,6 +2,9 @@ package org.example.serviceforcouriers.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.example.serviceforcouriers.controller.ReceivingOrderController;
 import org.example.serviceforcouriers.entity.Order;
 import org.example.serviceforcouriers.exceptions.ProductNotFoundException;
 import org.example.serviceforcouriers.repository.OrderRepository;
@@ -16,6 +19,7 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private static final Logger logger = LogManager.getLogger(OrderService.class);
 
     public Order getOrderById (Long productId) {
         return orderRepository
@@ -28,9 +32,15 @@ public class OrderService {
     }
 
     public Order saveSoldStatus(Long productId, boolean status) {
-        Order order = getOrderById(productId);
-        order.setSoldStatus(status);
-        return orderRepository.save(order);
+      try {
+          Order order = getOrderById(productId);
+          order.setSoldStatus(status);
+          return orderRepository.save(order);
+      } catch (Exception e) {
+          logger.error(e);
+      }
+        logger.info("Успешно сохранён заказ");
+        return null;
     }
 
     public Order newOrder (String product, String customerName, String executorName, String address, BigDecimal purchasesPrice, BigDecimal purchasesSell) {

@@ -1,6 +1,8 @@
 package org.example.serviceforcouriers.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.example.serviceforcouriers.controller.dto.OrderRequest;
 import org.example.serviceforcouriers.controller.dto.OrderRequestStatus;
 import org.example.serviceforcouriers.controller.dto.OrderResponse;
@@ -14,7 +16,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 public class ReceivingOrderController {
-
+    private static final Logger logger = LogManager.getLogger(ReceivingOrderController.class);
     private final OrderService orderService;
 
     // Работает
@@ -29,10 +31,14 @@ public class ReceivingOrderController {
     // Работает
     @GetMapping("/products/{productId}")
     public OrderResponse getOrderById(@PathVariable Long productId) {
-        System.out.println("Requested product ID: " + productId); // Логирование
-        Order order = orderService.getOrderById(productId);
-        System.out.println("Order from DB: " + order); // Логирование
-        return new OrderResponse(order);
+        try {
+            logger.info("Requested product ID: {}", productId); // Логирование
+            Order order = orderService.getOrderById(productId);
+            System.out.println("Order from DB: " + order); // Логирование
+            return new OrderResponse(order);
+        } catch (Exception e) {
+            logger.error(e);
+        }
     }
 
 
@@ -42,21 +48,29 @@ public class ReceivingOrderController {
             @PathVariable Long productId,
             @RequestBody OrderRequestStatus orderRequestStatus
     ) {
-        orderService.saveSoldStatus(productId, orderRequestStatus.isSoldStatus());
-        return "Статус заказа успешно обновлен";
+        try {
+            orderService.saveSoldStatus(productId, orderRequestStatus.isSoldStatus());
+            return "Статус заказа успешно обновлен";
+        } catch (Exception e) {
+            logger.error(e);
+        }
     }
 
     // Работает
     @PostMapping
     public Order createOrder(@RequestBody OrderRequest orderRequest) {
-        return orderService.newOrder(
-                orderRequest.getProduct(),
-                orderRequest.getCustomerName(),
-                orderRequest.getExecutorName(),
-                orderRequest.getAddress(),
-                orderRequest.getPurchasesPrice(),
-                orderRequest.getPurchasesSell()
-        );
+        try {
+            return orderService.newOrder(
+                    orderRequest.getProduct(),
+                    orderRequest.getCustomerName(),
+                    orderRequest.getExecutorName(),
+                    orderRequest.getAddress(),
+                    orderRequest.getPurchasesPrice(),
+                    orderRequest.getPurchasesSell()
+            );
+        } catch (Exception e) {
+            logger.error(e);
+        }
     }
 
 }
