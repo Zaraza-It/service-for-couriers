@@ -34,11 +34,13 @@ public class ReceivingOrderController {
         try {
             logger.info("Requested product ID: {}", productId); // Логирование
             Order order = orderService.getOrderById(productId);
-            System.out.println("Order from DB: " + order); // Логирование
+            logger.info("Order from DB: {}", order); // Логирование
             return new OrderResponse(order);
         } catch (Exception e) {
             logger.error(e);
         }
+
+        return null;
     }
 
 
@@ -54,6 +56,7 @@ public class ReceivingOrderController {
         } catch (Exception e) {
             logger.error(e);
         }
+        return null;
     }
 
     // Работает
@@ -71,6 +74,7 @@ public class ReceivingOrderController {
         } catch (Exception e) {
             logger.error(e);
         }
+        return null;
     }
 
 }
