@@ -3,11 +3,14 @@ package org.example.serviceforcouriers.controller;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.aspectj.weaver.ast.Or;
 import org.example.serviceforcouriers.controller.dto.OrderRequest;
 import org.example.serviceforcouriers.controller.dto.OrderRequestStatus;
 import org.example.serviceforcouriers.controller.dto.OrderResponse;
 import org.example.serviceforcouriers.entity.Order;
+import org.example.serviceforcouriers.response.ProductNameResponse;
 import org.example.serviceforcouriers.service.OrderService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,7 +54,7 @@ public class ReceivingOrderController {
             @RequestBody OrderRequestStatus orderRequestStatus
     ) {
         try {
-            orderService.saveSoldStatus(productId, orderRequestStatus.isSoldStatus());
+            orderService.saveSoldStatus(productId, orderRequestStatus);
             return "Статус заказа успешно обновлен";
         } catch (Exception e) {
             logger.error(e);

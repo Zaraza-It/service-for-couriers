@@ -1,12 +1,8 @@
 package org.example.botservice;
 
 import com.vdurmont.emoji.EmojiParser;
-import lombok.RequiredArgsConstructor;
 import org.example.botservice.dao.OrderRepository;
 import org.example.botservice.dto.Order;
-import org.example.botservice.service.BotService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
@@ -28,11 +24,10 @@ import java.util.List;
 @Component
 public class MBot implements LongPollingSingleThreadUpdateConsumer, SpringLongPollingBot {
     private final String command = "/start";
-    @Autowired
     private final OrderRepository orderRepository;
     private final TelegramClient telegramClient;
-   private final String buttonOrder = "Заказать";
-
+   private final String buttonOrder = "Список заказов";
+@Autowired
    public MBot(OrderRepository orderRepository) {
        this.orderRepository = orderRepository;
        telegramClient = new OkHttpTelegramClient(getBotToken());
@@ -63,30 +58,29 @@ public class MBot implements LongPollingSingleThreadUpdateConsumer, SpringLongPo
             }
         } else if (update.hasMessage() && update.getMessage().getText().equals(buttonOrder) ) {
             long chatId = update.getMessage().getChatId();
-            List<Order> allOrders = orderRepository.findAll();
+            List<Order> allOrders = orderRepository.findAllProduct();
             if (allOrders.size() > 0) {
                 try {
-                    int range = 0;
-                    while (allOrders.size() > 0) {
-                        if (range != allOrders.size()) {
-                            SendMessage sendMessage = SendMessage.builder()
-                                    .chatId(chatId)
-                                    .text("Выберите заказ")
-                                    .replyMarkup(InlineKeyboardMarkup
-                                            .builder()
-                                            .keyboardRow(new InlineKeyboardRow(InlineKeyboardButton
-                                                    .builder()
-                                                    .text(allOrders.get(range).toString())
-                                                    .callbackData(allOrders.get(range).getProduct())
-                                                    .build()))
-                                            .build())
-                                    .build();
-                            telegramClient.execute(sendMessage);
-                        }
-                    range++;
-                    }
+                    int range = 1;
+                    if (range != allOrders.size()) {
+                        SendMessage sendMessage = SendMessage.builder()
+                                .chatId(chatId)
+                                .text("Выберите заказ")
+                                .replyMarkup(InlineKeyboardMarkup
+                                        .builder()
+                                        .keyboardRow(new InlineKeyboardRow(InlineKeyboardButton
+                                                .builder()
+                                                .text(allOrders.get(range).toString())
+                                                .callbackData(allOrders.get(range).getProduct())
+                                                .build()))
+                                        .build())
+                                .build();
+                        telegramClient.execute(sendMessage);
 
-                    } catch(TelegramApiException e){
+                        range++;
+                    }
+                }
+                     catch(TelegramApiException e){
                         throw new RuntimeException(e);
 
                     }

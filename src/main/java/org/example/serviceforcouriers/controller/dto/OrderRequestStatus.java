@@ -1,12 +1,11 @@
 package org.example.serviceforcouriers.controller.dto;
 
 import lombok.Data;
+import lombok.Getter;
 
 @Data
 public class OrderRequestStatus {
-
-    private Long productId;
-
+    @Getter
     private boolean soldStatus;
 
 

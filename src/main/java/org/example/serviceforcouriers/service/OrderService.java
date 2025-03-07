@@ -6,12 +6,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.serviceforcouriers.controller.ReceivingOrderController;
 import org.example.serviceforcouriers.controller.dto.OrderRequest;
+import org.example.serviceforcouriers.controller.dto.OrderRequestStatus;
 import org.example.serviceforcouriers.entity.Order;
 import org.example.serviceforcouriers.exceptions.ProductNotFoundException;
 import org.example.serviceforcouriers.repository.OrderRepository;
+import org.example.serviceforcouriers.response.ProductNameResponse;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -32,10 +35,10 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
-    public Order saveSoldStatus(Long productId, boolean status) {
+    public Order saveSoldStatus(Long productId,OrderRequestStatus status) {
       try {
           Order order = getOrderById(productId);
-          order.setSoldStatus(status);
+          order.setSoldStatus(status.isSoldStatus());
           return orderRepository.save(order);
       } catch (Exception e) {
           logger.error(e);
@@ -44,14 +47,14 @@ public class OrderService {
         return null;
     }
 
-    public Order newOrder (String product, String customerName, String executorName, String address, BigDecimal purchasesPrice, BigDecimal purchasesSell) {
-        return orderRepository.save(new Order(product, customerName, executorName, address, purchasesPrice, purchasesSell));
-    }
+    //public Order newOrder (String product, String customerName, String executorName, String address, BigDecimal purchasesPrice, BigDecimal purchasesSell) {
+      //  return orderRepository.save(new Order(product, customerName, executorName, address, purchasesPrice, purchasesSell));
+   // }
 
     public void createOrder(OrderRequest request) {
         try {
             if (orderRepository.findOrderByProduct(request.getProduct()) == null) {
-               Order order =  new Order()
+               Order order =  new Order();
                 order.setCustomerName(request.getCustomerName());
                 order.setExecutorName(request.getExecutorName());
                 order.setAddress(request.getAddress());
@@ -64,5 +67,7 @@ public class OrderService {
             logger.error(e);
         }
     }
+
+
 
 }
