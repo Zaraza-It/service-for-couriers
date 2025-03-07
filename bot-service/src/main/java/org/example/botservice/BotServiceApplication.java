@@ -1,7 +1,5 @@
-package org.example.botservice;
+    package org.example.botservice;
 
-import org.example.botservice.emoji.Emoji;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
@@ -16,7 +14,7 @@ public class BotServiceApplication {
 
             final String token = "7429114213:AAE2-zlkX3fzcYUMyqxyFU83cJKMTLLXXyc";
             TelegramBotsLongPollingApplication botsLongPollingApplication = new TelegramBotsLongPollingApplication();
-            botsLongPollingApplication.registerBot(token, new Emoji());
+            botsLongPollingApplication.registerBot(token, new MBot());
 
         } catch (TelegramApiException e) {
             e.printStackTrace();

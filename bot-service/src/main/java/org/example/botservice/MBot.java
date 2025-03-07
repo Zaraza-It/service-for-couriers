@@ -1,6 +1,10 @@
-package org.example.botservice.emoji;
+package org.example.botservice;
 
 import com.vdurmont.emoji.EmojiParser;
+import lombok.RequiredArgsConstructor;
+import org.example.botservice.dao.OrderRepository;
+import org.example.botservice.dto.Order;
+import org.example.botservice.service.BotService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
@@ -12,18 +16,21 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButtonPollType;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.util.List;
-
-public class Emoji implements LongPollingSingleThreadUpdateConsumer {
-    private static final Logger log = LoggerFactory.getLogger(Emoji.class);
+@RequiredArgsConstructor
+public class MBot implements LongPollingSingleThreadUpdateConsumer {
+    private static final Logger log = LoggerFactory.getLogger(MBot.class);
     private final String command = "/start";
+    private final OrderRepository orderRepository;
+    private final BotService botService;
+
+
    private final String buttonOrder = "Заказать";
-   TelegramClient telegramClient = new OkHttpTelegramClient("");
+   TelegramClient telegramClient = new OkHttpTelegramClient("7429114213:AAE2-zlkX3fzcYUMyqxyFU83cJKMTLLXXyc");
     @Override
     public void consume(List<Update> updates) {
         LongPollingSingleThreadUpdateConsumer.super.consume(updates);
@@ -40,7 +47,7 @@ public class Emoji implements LongPollingSingleThreadUpdateConsumer {
                     .build();
             message.setReplyMarkup(ReplyKeyboardMarkup
                     .builder()
-                    .keyboardRow(new KeyboardRow("Заказать"))
+                    .keyboardRow(new KeyboardRow("Список заказов"))
                     .keyboardRow(new KeyboardRow("Информация")).build());
             try {
                 telegramClient.execute(message);
@@ -49,24 +56,38 @@ public class Emoji implements LongPollingSingleThreadUpdateConsumer {
             }
         } else if (update.hasMessage() && update.getMessage().getText().equals(buttonOrder) ) {
             long chatId = update.getMessage().getChatId();
-            SendMessage sendMessage = SendMessage.builder()
-                    .chatId(chatId)
-                    .text("Выберите заказ")
-                    .replyMarkup(InlineKeyboardMarkup
-                            .builder()
-                            .keyboardRow(new InlineKeyboardRow(InlineKeyboardButton
-                                    .builder()
-                                    .text("Заказать")
-                                    .callbackData("create_order")
-                                    .build()))
-                            .build())
-                    .build();
-            try {
-                telegramClient.execute(sendMessage);
-            } catch (TelegramApiException e) {
-                throw new RuntimeException(e);
-            }
+            List<Order> allOrders = orderRepository.findAll();
+            if (allOrders.size() > 0) {
+                try {
+                    int range = 0;
+                    while (allOrders.size() > 0) {
+                        if (range != allOrders.size()) {
+                            SendMessage sendMessage = SendMessage.builder()
+                                    .chatId(chatId)
+                                    .text("Выберите заказ")
+                                    .replyMarkup(InlineKeyboardMarkup
+                                            .builder()
+                                            .keyboardRow(new InlineKeyboardRow(InlineKeyboardButton
+                                                    .builder()
+                                                    .text(allOrders.get(range).toString())
+                                                    .callbackData(allOrders.get(range).getProduct())
+                                                    .build()))
+                                            .build())
+                                    .build();
+                            telegramClient.execute(sendMessage);
+                        }
+                    range++;
+                    }
 
+                    } catch(TelegramApiException e){
+                        throw new RuntimeException(e);
+
+                    }
+
+
+
+
+            }
         } else if (update.hasCallbackQuery()) {
 
              String callData = update.getCallbackQuery().getData();
