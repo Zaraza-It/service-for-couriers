@@ -1,4 +1,14 @@
 spring:
   datasource:
     url:
-      jdbc:postgresql://localhost:5432/order_db 
+      jdbc:postgresql://localhost:5432/order_db
+    hikari:
+      username: postgres
+      password: garage123
+      driver-class-name: org.postgresql.Driver
+      auto-commit: false
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
