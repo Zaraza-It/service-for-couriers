@@ -1,27 +1,28 @@
 package org.example.serviceforcouriers.controller;
 
-import lombok.RequiredArgsConstructor;
 import org.example.serviceforcouriers.controller.dto.OrderRequestDTO;
 import org.example.serviceforcouriers.controller.dto.OrderResponseDTO;
-import org.example.serviceforcouriers.entity.Order;
 import org.example.serviceforcouriers.service.OrderService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
-public class ProductsController {
+public class OrdersController {
 
     private final OrderService orderService;
 
-    public ProductsController(OrderService orderService) {
+    public OrdersController(OrderService orderService) {
         this.orderService = orderService;
     }
 
     @GetMapping("/orders")
-    public List<Order> getAllOrders () {
-        return orderService.getAllOrders();
+    public List<OrderResponseDTO> getAllOrders () {
+        return orderService.getAllOrders().stream()
+                .map(OrderResponseDTO::new)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/orders/{orderId}")

@@ -29,9 +29,6 @@ public class OrderResponseDTO {
 
     private BigDecimal purchasesSell;
 
-    public OrderResponseDTO(OrderResponseDTO order) {
-    }
-
     public OrderResponseDTO (Order order) {
         id = order.getOrderId();
         product = order.getProduct();
