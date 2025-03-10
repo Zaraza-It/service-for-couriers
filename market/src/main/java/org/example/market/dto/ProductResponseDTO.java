@@ -1,10 +1,14 @@
-package org.example.market.controller.dto;
+package org.example.market.dto;
 
-import lombok.Data;
+import lombok.*;
+import org.example.market.entity.Product;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductResponseDTO {
 
         private Long productId;
@@ -15,7 +19,7 @@ public class ProductResponseDTO {
 
         private BigDecimal productPrice;
 
-        public ProductResponseDTO(ProductResponseDTO productResponseDTO) {
 
+        public ProductResponseDTO(Product product) {
         }
 }

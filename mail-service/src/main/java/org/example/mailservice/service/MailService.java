@@ -51,27 +51,27 @@ public class MailService {
 
 
 
-public void SendMessageInMail(@Email String email,Long id) throws MessagingException {
-    try {
-        if (email != null && email != null) {
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(username));
-            message.setRecipient(Message.RecipientType.TO, new InternetAddress(email));
-            message.setSubject(email);
-            message.setText("Заказ " + id + " был успешно взят");
-            Transport.send(message);
-            logger.info("Сообщение было успешно отправлено");
-            if (checkMail(email) == true) {
-                Mail mail = new Mail();
-                mail.setEmail(email);
-                mailRepository.save(mail);
+    public void SendMessageInMail(@Email String email,Long id) throws MessagingException {
+        try {
+            if (email != null && email != null) {
+                Message message = new MimeMessage(session);
+                message.setFrom(new InternetAddress(username));
+                message.setRecipient(Message.RecipientType.TO, new InternetAddress(email));
+                message.setSubject(email);
+                message.setText("Заказ " + id + " был успешно взят");
+                Transport.send(message);
+                logger.info("Сообщение было успешно отправлено");
+                if (checkMail(email) == true) {
+                    Mail mail = new Mail();
+                    mail.setEmail(email);
+                    mailRepository.save(mail);
+                }
+                else logger.info("Почта уже существует в базе");
+                }
             }
-            else logger.info("Почта уже существует в базе");
-            }
+         catch (Exception e) {
+            logger.error(e);
         }
-     catch (Exception e) {
-        logger.error(e);
     }
-}
 
 }

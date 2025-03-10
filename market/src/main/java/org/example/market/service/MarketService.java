@@ -1,28 +1,39 @@
 package org.example.market.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.market.controller.dto.ProductResponseDTO;
+import org.example.market.dto.ProductResponseDTO;
 import org.example.market.entity.Product;
 import org.example.market.exceptions.ProductNotFoundException;
 import org.example.market.repository.ProductsRepository;
+import org.hibernate.query.Order;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class MarketService {
 
     private final ProductsRepository productsRepository;
 
+    public MarketService(ProductsRepository productsRepository) {
+        this.productsRepository = productsRepository;
+    }
 
-    public List<ProductResponseDTO> getAllProducts () {
+    public List<Product> getAllProducts () {
         return productsRepository.findAll();
     }
 
-    public Product getProductById (Long productId) {
-        return productsRepository
-                .findById(productId)
-                .orElseThrow(() ->  new ProductNotFoundException("Товар не был найден"));
+    public Long createProduct (String productName, Long quantity, BigDecimal productPrice) {
+        if (productName == null || quantity == null || productName == null) {
+            throw new IllegalArgumentException("Не все параметры были заполнены.");
+        }
+
+        return productsRepository.save(new Product(productName, quantity, productPrice))
+                .getProductId();
     }
+
+
+
+
 }

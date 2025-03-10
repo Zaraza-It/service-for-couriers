@@ -1,4 +1,4 @@
-package org.example.serviceforcouriers.controller.dto;
+package org.example.serviceforcouriers.dto;
 
 
 import lombok.*;

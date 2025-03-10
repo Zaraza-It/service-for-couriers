@@ -2,7 +2,6 @@ package org.example.serviceforcouriers.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.serviceforcouriers.controller.dto.OrderResponseDTO;
 import org.example.serviceforcouriers.entity.Order;
 import org.example.serviceforcouriers.exceptions.OrderNotFoundException;
 import org.example.serviceforcouriers.repository.OrderRepository;

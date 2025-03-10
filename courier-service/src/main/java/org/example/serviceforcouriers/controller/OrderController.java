@@ -1,7 +1,7 @@
 package org.example.serviceforcouriers.controller;
 
-import org.example.serviceforcouriers.controller.dto.OrderRequestDTO;
-import org.example.serviceforcouriers.controller.dto.OrderResponseDTO;
+import org.example.serviceforcouriers.dto.OrderRequestDTO;
+import org.example.serviceforcouriers.dto.OrderResponseDTO;
 import org.example.serviceforcouriers.service.OrderService;
 import org.springframework.web.bind.annotation.*;
 
