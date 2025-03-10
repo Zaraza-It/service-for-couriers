@@ -1,70 +1,54 @@
 package org.example.serviceforcouriers.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.example.serviceforcouriers.controller.dto.OrderRequestDTO;
-import org.example.serviceforcouriers.controller.dto.OrderRequestStatusDTO;
 import org.example.serviceforcouriers.controller.dto.OrderResponseDTO;
 import org.example.serviceforcouriers.entity.Order;
 import org.example.serviceforcouriers.service.OrderService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RestController
-@RequiredArgsConstructor
 public class ProductsController {
 
-    private static final Logger logger = LogManager.getLogger(ProductsController.class);
     private final OrderService orderService;
 
-    // Работает
-    @GetMapping("/products")
-    public List<OrderResponseDTO> getAllOrders() {
-        return orderService.getAllOrders().stream()
-                .map(OrderResponseDTO::new)
-                .collect(Collectors.toList());
+    public ProductsController(OrderService orderService) {
+        this.orderService = orderService;
     }
 
-
-    // Работает
-    @GetMapping("/products/{productId}")
-    public OrderResponseDTO getOrderById(@PathVariable Long productId) {
-
-        logger.info("Requested product ID: {}", productId); // Логирование
-
-        Order order = orderService.getOrderById(productId);
-
-        logger.info("Order from DB: {}", order); // Логирование
-
-        return new OrderResponseDTO(order);
+    @GetMapping("/orders")
+    public List<Order> getAllOrders () {
+        return orderService.getAllOrders();
     }
 
-
-    // Работает
-    @PostMapping("/products/{productId}/status")
-    public String updateOrderStatus(
-            @PathVariable Long productId,
-            @RequestBody OrderRequestStatusDTO soldStatus
-    ) {
-        if (soldStatus == null) {
-            return "Статус равен значению null";
-        }
-
-        if (soldStatus.isSoldStatus() == true || soldStatus.isSoldStatus() == false ) {
-            orderService.saveSoldStatus(productId, soldStatus.isSoldStatus());
-            return "Статус заказа успешно обновлен";
-        } else {
-            return "Значение не является boolean";
-        }
+    @GetMapping("/orders/{orderId}")
+    public OrderResponseDTO getOrderById (@PathVariable Long orderId) {
+        return new OrderResponseDTO(orderService.getOrder(orderId));
     }
 
-//    // Работает // Изменил код
-//    @PostMapping("/create")
-//    public void createOrder(@RequestBody OrderRequestDTO orderRequest) {
-//            orderService.createOrder(orderRequest);
-//    }
+    @PostMapping("/orders")
+    public Long createOrder (@RequestBody OrderRequestDTO orderRequestDTO) {
+        return orderService.createOrder(
+                orderRequestDTO.getProduct(),
+                orderRequestDTO.getCustomerName(),
+                orderRequestDTO.getExecutorName(),
+                orderRequestDTO.getAddress(),
+                orderRequestDTO.getPurchasesPrice(),
+                orderRequestDTO.getPurchasesSell()
+        );
+    }
 
+    @PutMapping("orders/{orderId}")
+    public OrderResponseDTO updateSoldStatus (@PathVariable Long orderId,
+                                              String soldStatus) {
+        return new OrderResponseDTO(orderService.updateSoldStatus(orderId, soldStatus));
+    }
+
+    @DeleteMapping("orders/{orderId}")
+    public OrderResponseDTO deleteAccount (@PathVariable Long orderId) {
+        return new OrderResponseDTO(orderService.deleteOrderById(orderId));
+    }
 }

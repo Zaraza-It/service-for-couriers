@@ -1,38 +1,46 @@
 package org.example.serviceforcouriers.controller.dto;
 
-import lombok.Data;
+
+import lombok.*;
 import org.example.serviceforcouriers.entity.Order;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderResponseDTO {
 
-    private Long productId;
+    private Long id;
+
     private String product;
+
     private String customerName;
+
     private String executorName;
+
     private String address;
+
+    private OffsetDateTime offsetDateTime;
+
+    private BigDecimal purchasesPrice;
+
     private BigDecimal purchasesSell;
-    private boolean soldStatus;
 
-    public OrderResponseDTO(Long productId, String product, String customerName, String executorName, String address, BigDecimal purchasesSell, boolean soldStatus) {
-        this.productId = productId;
-        this.product = product;
-        this.customerName = customerName;
-        this.executorName = executorName;
-        this.address = address;
-        this.purchasesSell = purchasesSell;
-        this.soldStatus = soldStatus;
+    public OrderResponseDTO(OrderResponseDTO order) {
     }
 
-    public OrderResponseDTO(Order order) {
-        this.productId = order.getId();
-        this.product = order.getProduct();
-        this.customerName = order.getCustomerName();
-        this.executorName = order.getExecutorName();
-        this.address = order.getAddress();
-        this.purchasesSell = order.getPurchasesSell();
-        this.soldStatus = order.getSoldStatus() != null && order.getSoldStatus();
+    public OrderResponseDTO (Order order) {
+        id = order.getOrderId();
+        product = order.getProduct();
+        customerName = order.getCustomerName();
+        executorName = order.getExecutorName();
+        address = order.getAddress();
+        offsetDateTime = order.getOffsetDateTime();
+        purchasesPrice = order.getPurchasesPrice();
+        purchasesSell = order.getPurchasesSell();
     }
+
 }
