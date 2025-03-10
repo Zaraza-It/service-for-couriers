@@ -14,5 +14,5 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT o.product FROM Order o")
-        List<Order> findAllProduct();
+        Optional<Order> findAllProduct();
 }
