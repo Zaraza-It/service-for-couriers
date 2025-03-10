@@ -33,7 +33,14 @@ public class MarketService {
                 .getProductId();
     }
 
-
+    public List<Product> filterProductByCategory (String categoryProduct) {
+       try {
+           List<Product> products = productsRepository.findAllByCategoryProduct(categoryProduct);
+           return products;
+       } catch (Exception e) {
+           System.out.println(e);
+       }
+    }
 
 
 }

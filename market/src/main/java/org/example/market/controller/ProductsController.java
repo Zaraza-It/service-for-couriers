@@ -2,9 +2,12 @@ package org.example.market.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.market.dto.ProductResponseDTO;
+import org.example.market.entity.Product;
 import org.example.market.service.MarketService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
@@ -36,6 +39,12 @@ public class ProductsController {
                 quantity,
                 productPrice
         );
+    }
+
+    @GetMapping("/filter/")
+    public ResponseEntity<List<Product>> filterProductsBy (@RequestParam String categoryProduct) {
+      List<Product> products = marketService.filterProductByCategory(categoryProduct);
+      ResponseEntity.ok(products);
     }
 
 
