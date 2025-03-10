@@ -13,6 +13,6 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    @Query("select o.product from Order o")
-    List<Order> findAllProduct();
+    @Query("SELECT o.product FROM Order o")
+        List<Order> findAllProduct();
 }
