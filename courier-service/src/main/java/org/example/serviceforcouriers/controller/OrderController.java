@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 
 
 @RestController
-public class OrdersController {
+public class OrderController {
 
     private final OrderService orderService;
 
-    public OrdersController(OrderService orderService) {
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
 
