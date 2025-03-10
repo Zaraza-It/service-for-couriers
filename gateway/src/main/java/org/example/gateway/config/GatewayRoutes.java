@@ -15,8 +15,8 @@ public class GatewayRoutes {
 public RouteLocator setStatusRoute(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("setStatusRoute",r ->
-                        r.path("/products/{productId}/status")
-                                .filters(f -> f.rewritePath("(?<productId>.*)", "${productId}"))
+                        r.path("/orders/{orderId}")
+                                .filters(f -> f.rewritePath("(?<orderId>.*)", "${orderId}"))
                                 .uri("http://localhost:8080"))
                 .build();
     }
@@ -25,8 +25,8 @@ public RouteLocator setStatusRoute(RouteLocatorBuilder builder) {
 public RouteLocator getOrderById(RouteLocatorBuilder builder) {
     return builder.routes()
             .route("getOrderByIdRoute",r ->
-                    r.path("/products/{productId}")
-                            .filters(f -> f.rewritePath("(?<productId>.*)","${productId}"))
+                    r.path("/orders/{orderId}")
+                            .filters(f -> f.rewritePath("(?<orderId>.*)","${orderId}"))
                             .uri("http://localhost:8080")).build();
 }
 
@@ -35,8 +35,35 @@ public RouteLocator getOrderById(RouteLocatorBuilder builder) {
 public RouteLocator getAllOrders(RouteLocatorBuilder builder) {
     return builder.routes()
             .route("getAllOrdersRoute",r ->
-                    r.path("/products")
+                    r.path("/orders")
                             .uri("http://localhost:8080")).build();
 }
 
+
+@Bean
+    public RouteLocator create(RouteLocatorBuilder builder) {
+    return builder.routes()
+            .route("createOrder",r ->
+                    r.path("/orders")
+                            .uri("http://localhost:8080")).build();
 }
+
+
+@Bean
+    public RouteLocator deleteOrder(RouteLocatorBuilder builder) {
+    return builder.routes()
+            .route("deleteOrder",r ->
+            r.path("orders/{orderId}")
+                    .filters(f -> f.rewritePath("(?<orderId>.*)","${orderId}"))
+                    .uri("http://localhost:8080")).build();
+}
+
+    @Bean
+    public RouteLocator updateOrder(RouteLocatorBuilder builder) {
+        return builder.routes()
+                .route("updateOrder",r ->
+                        r.path("orders/{orderId}")
+                                .filters(f -> f.rewritePath("(?<orderId>.*)","${orderId}"))
+                                .uri("http://localhost:8080")).build();
+    }
+
