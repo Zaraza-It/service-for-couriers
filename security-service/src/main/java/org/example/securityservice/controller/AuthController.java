@@ -1,17 +1,14 @@
-package org.example.authservice.controller;
+package org.example.securityservice.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import org.example.authservice.requests.JwtAuthenticationResponse;
-import org.example.authservice.requests.Register;
-import org.example.authservice.requests.SignInRequest;
-import org.example.authservice.response.TokenResponse;
-import org.example.authservice.services.AuthorizationService;
-import org.example.authservice.services.JwtTokensService;
-import org.hibernate.sql.Update;
+import org.example.securityservice.requests.JwtAuthenticationResponse;
+import org.example.securityservice.requests.Register;
+import org.example.securityservice.requests.SignInRequest;
+import org.example.securityservice.response.TokenResponse;
+import org.example.securityservice.services.AuthorizationService;
+import org.example.securityservice.services.JwtTokensService;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

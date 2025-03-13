@@ -1,4 +1,4 @@
-package org.example.authservice.model;
+package org.example.securityservice.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.lang.Nullable;

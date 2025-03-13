@@ -1,4 +1,4 @@
-package org.example.authservice.services;
+package org.example.securityservice.services;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -10,21 +10,19 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.example.authservice.configs.UserInfoService;
-import org.example.authservice.response.TokenResponse;
+import org.example.securityservice.configs.UserInfoService;
+import org.example.securityservice.model.User;
+import org.example.securityservice.response.TokenResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import javax.crypto.spec.SecretKeySpec;
+
 import java.security.Key;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+
 @RequiredArgsConstructor
 @Service
 public class JwtTokensService {
@@ -82,7 +80,7 @@ public boolean validateToken(String token) {
 }
 
 public String generateAccessToken(UserDetails userDetails) {
-    if (userDetails instanceof org.example.authservice.model.User customUD) {
+    if (userDetails instanceof User customUD) {
         return Jwts.builder()
                 .setSubject(customUD.getUsername())
                 .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5)))
@@ -116,7 +114,7 @@ public TokenResponse updateAccessTokenByRefreshToken(String refreshToken) {
     if (validateRefreshToken(refreshToken)) {
         final Claims claims = getRefreshClaims(refreshToken);
         final String username = claims.getSubject();
-        final org.example.authservice.model.User user = userService.getByUsername(username);
+        final User user = userService.getByUsername(username);
         final String accessToken = generateAccessToken(user);
         return new TokenResponse(accessToken, null);
     }
@@ -127,7 +125,7 @@ public TokenResponse updateRefresh(String refreshToken) {
         if (validateRefreshToken(refreshToken)) {
             final Claims claims = getRefreshClaims(refreshToken);
             final String username = claims.getSubject();
-            final org.example.authservice.model.User user = userService.getByUsername(username);
+            final User user = userService.getByUsername(username);
             final String accessToken = generateAccessToken(user);
             final String newRefreshToken = generateRefreshToken(user);
             return new TokenResponse(accessToken, newRefreshToken);

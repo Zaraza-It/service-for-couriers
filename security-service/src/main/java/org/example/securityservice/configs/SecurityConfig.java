@@ -1,9 +1,9 @@
-package org.example.authservice.configs;
+package org.example.securityservice.configs;
 
-import lombok.RequiredArgsConstructor;
-import org.example.authservice.filters.JwtAuthenticationFilter;
-import org.example.authservice.services.UserService;
+import org.example.securityservice.filters.JwtAuthenticationFilter;
+import org.example.securityservice.services.UserService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,13 +26,16 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfig {
 
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
   private final UserService userService;
-
+@Autowired
+  public SecurityConfig(final JwtAuthenticationFilter jwtAuthenticationFilter, final UserService userService) {
+    this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    this.userService = userService;
+}
 
 
   @Bean

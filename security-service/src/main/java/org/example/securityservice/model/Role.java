@@ -1,4 +1,4 @@
-package org.example.authservice.model;
+package org.example.securityservice.model;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

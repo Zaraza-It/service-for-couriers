@@ -1,9 +1,9 @@
-package org.example.authservice.services;
+package org.example.securityservice.services;
 
 import io.jsonwebtoken.Claims;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.example.authservice.model.Role;
+import org.example.securityservice.model.Role;
 
 import java.util.List;
 import java.util.Set;

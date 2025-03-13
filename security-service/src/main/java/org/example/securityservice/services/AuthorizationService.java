@@ -1,22 +1,20 @@
-package org.example.authservice.services;
+package org.example.securityservice.services;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.example.authservice.dao.UserRepository;
-import org.example.authservice.model.Role;
-import org.example.authservice.model.User;
-import org.example.authservice.requests.JwtAuthenticationResponse;
-import org.example.authservice.requests.Register;
+import org.example.securityservice.dao.UserRepository;
+import org.example.securityservice.model.Role;
+import org.example.securityservice.model.User;
+import org.example.securityservice.requests.JwtAuthenticationResponse;
+import org.example.securityservice.requests.Register;
 
-import org.example.authservice.requests.SignInRequest;
+import org.example.securityservice.requests.SignInRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 

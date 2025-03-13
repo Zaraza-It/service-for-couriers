@@ -1,4 +1,4 @@
-package org.example.authservice.filters;
+package org.example.securityservice.filters;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -7,13 +7,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.http11.Http11OutputBuffer;
-import org.apache.coyote.http11.Http11Processor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.example.authservice.response.TokenResponse;
-import org.example.authservice.services.JwtTokensService;
-import org.example.authservice.services.UserService;
+import org.example.securityservice.response.TokenResponse;
+import org.example.securityservice.services.JwtTokensService;
+import org.example.securityservice.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,9 +27,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-
-@Component
 @RequiredArgsConstructor
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION = "Authorization";
     private static final String NOTOKEN = "NoTokenAuth";

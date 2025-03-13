@@ -1,14 +1,13 @@
-package org.example.authservice.services;
+package org.example.securityservice.services;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.authservice.model.Role;
+import org.example.securityservice.model.Role;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.security.auth.Subject;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 @Getter
 @Setter
