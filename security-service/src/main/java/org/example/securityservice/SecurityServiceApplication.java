@@ -1,13 +1,13 @@
-package org.example.authservice;
+package org.example.securityservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AuthServiceApplication {
+public class SecurityServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AuthServiceApplication.class, args);
+        SpringApplication.run(SecurityServiceApplication.class, args);
     }
 
 }
