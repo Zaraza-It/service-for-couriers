@@ -66,5 +66,9 @@ public RouteLocator getAllOrders(RouteLocatorBuilder builder) {
                                 .filters(f -> f.rewritePath("(?<orderId>.*)","${orderId}"))
                                 .uri("http://localhost:8080")).build();
     }
+
+
+
+
 }
 
