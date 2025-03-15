@@ -3,7 +3,7 @@ package org.example.securityservice.services;
 import io.jsonwebtoken.Claims;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.example.securityservice.model.Role;
+import org.example.securityservice.model.enums.RoleEnum;
 
 import java.util.List;
 import java.util.Set;
@@ -22,10 +22,10 @@ public static  JwtAuthentication generate(Claims claims) {
 
 
 
-private static Set<Role> getRoles(Claims claims) {
-    final List<String> roles =claims.get("roles", List.class);
+private static Set<RoleEnum> getRoles(Claims claims) {
+    final List<String> roles = claims.get("roles", List.class);
     return roles.stream()
-            .map(Role::valueOf)
+            .map(RoleEnum::valueOf)
             .collect(Collectors.toSet());
 }
 

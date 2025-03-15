@@ -1,5 +1,7 @@
 package org.example.gateway.config;
 
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +11,8 @@ import reactor.core.publisher.Mono;
 
 @Configuration
 public class GatewayRoutes {
+
+    @Value("${location.filter.auth.uri}") private String uri;
 
 
 @Bean
@@ -67,7 +71,13 @@ public RouteLocator getAllOrders(RouteLocatorBuilder builder) {
                                 .uri("http://localhost:8080")).build();
     }
 
-
+    @Bean
+    public RouteLocator login(RouteLocatorBuilder builder) {
+        return builder.routes()
+                .route("login",r ->
+                        r.path("/auth/login")
+                                .uri(uri)).build();
+    }
 
 
 }

@@ -10,7 +10,6 @@ import lombok.Setter;
 
 @Data
 public class Register {
-    @NotBlank(message = "Имя пользователя не может быть пустыми")
     @Getter @Setter
     private String username;
 

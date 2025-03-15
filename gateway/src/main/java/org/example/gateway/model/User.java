@@ -4,7 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.gateway.model.enums.RoleEnum;
 import org.springframework.lang.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -30,15 +33,14 @@ public class User implements UserDetails {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "role")
     @CollectionTable(name = "user_roles",joinColumns = @JoinColumn(name = "user_id"))
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
+    private Set<RoleEnum> roles;
 
 
 
-    public Set<Role> getRoles() {
+    public Set<RoleEnum> getRoles() {
         return Collections.unmodifiableSet(roles);
     }
 

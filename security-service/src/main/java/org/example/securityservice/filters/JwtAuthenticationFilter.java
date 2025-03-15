@@ -43,8 +43,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
            @org.springframework.lang.NonNull HttpServletResponse response,
            @org.springframework.lang.NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        var token = request.getHeader(AUTHORIZATION);
-        if (StringUtils.isEmpty(token) || !token.startsWith(BEARER_PREFIX)) {
+        var token = request.getHeader("AccessToken");
+        if (StringUtils.isEmpty(token) || !token.startsWith("AccessToken")) {
             logger.info("Хэдер на регистрацию");
             filterChain.doFilter(request, response);
             return;
@@ -68,7 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
               logger.info(e.getMessage());
           }
           }
-        var jwt = token.substring(BEARER_PREFIX.length());
+        var jwt = token;
         var refreshToken = request.getHeader("RefreshToken");
 
 
@@ -108,7 +108,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             SecurityContextHolder.setContext(context);
                             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                             response.addHeader("AccessToken", tokenResponse.getAccessToken());
-                            Cookie cookie = new Cookie("refresh", refreshToken);
+                            Cookie cookie = new Cookie("RefreshToken", refreshToken);
                             response.addCookie(cookie);
                          filterChain.doFilter(request, response);
                         }

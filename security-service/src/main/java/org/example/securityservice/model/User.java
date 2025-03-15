@@ -1,16 +1,13 @@
 package org.example.securityservice.model;
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.securityservice.model.enums.RoleEnum;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
+import java.util.*;
 
 
 @Data
@@ -21,6 +18,7 @@ import java.util.Set;
 public class User implements UserDetails {
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Column(name = "user_id")
 private Long id;
 @Column(name = "username")
 private String username;
@@ -31,15 +29,15 @@ private String password;
 @Column(name = "email")
 private String email;
 
-@Column(name = "role")
-@CollectionTable(name = "user_roles",joinColumns = @JoinColumn(name = "user_id"))
-@ElementCollection(fetch = FetchType.EAGER)
+
 @Enumerated(EnumType.STRING)
-private Set<Role> roles;
+@CollectionTable(name ="roles",joinColumns = @JoinColumn(name = "user_id"))
+@ElementCollection(fetch = FetchType.EAGER)
+private Set<RoleEnum> roles;
 
 
 
-    public Set<Role> getRoles() {
+    public Set<RoleEnum> getRoles() {
         return Collections.unmodifiableSet(roles);
     }
 

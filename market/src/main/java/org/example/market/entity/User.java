@@ -11,16 +11,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users",schema = "users")
+@Table(name = "users")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,17 +32,16 @@ public class User implements UserDetails {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "role")
-    @CollectionTable(name = "user_roles",joinColumns = @JoinColumn(name = "user_id"))
-    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
+    @CollectionTable(name ="roles",joinColumns = @JoinColumn(name = "user_id"))
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<Role> roles;
 
 
 
-    @OneToMany(mappedBy = "user")
-    @JoinColumn(name = "product_id",table = "users")
-    private List<Product> product;
+    @OneToMany
+    @JoinColumn(name = "products_id")
+    private Set<Product> product = new HashSet<Product>();
 
 
     public Set<Role> getRoles() {

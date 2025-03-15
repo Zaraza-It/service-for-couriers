@@ -4,19 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.securityservice.dao.UserRepository;
-import org.example.securityservice.model.Role;
 import org.example.securityservice.model.User;
+import org.example.securityservice.model.enums.RoleEnum;
 import org.example.securityservice.requests.JwtAuthenticationResponse;
 import org.example.securityservice.requests.Register;
 
 import org.example.securityservice.requests.SignInRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +27,6 @@ public class AuthorizationService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-
     public void registrationUser(Register register) {
         try {
             User usernameInUser = userRepository.findByUsername(register.getUsername());
@@ -38,7 +36,7 @@ public class AuthorizationService {
                 logger.info(register.getUsername());
                 user.setPassword(passwordEncoder.encode(register.getPassword()));
                 logger.info(register.getPassword());
-                user.setRoles(Collections.singleton(Role.ROLE_USER));
+                user.setRoles(Collections.singleton(RoleEnum.ROLE_USER));
 
                 userRepository.save(user);
                 logger.info(register.getUsername() + "Done");

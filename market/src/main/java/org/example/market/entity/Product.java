@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "products",schema = "products")
+@Table(name = "products")
 public class Product {
 
     @Id
@@ -29,7 +29,8 @@ public class Product {
     @Column(name = "product_price")
     private BigDecimal productPrice;
 
-    @ManyToOne(fetch = FetchType.LAZY,targetEntity = User.class)
+    @ManyToOne
+    @JoinTable(name = "user_id")
     private User user;
 
 

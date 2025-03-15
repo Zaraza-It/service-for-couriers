@@ -24,14 +24,19 @@ public class AuthController {
     @PostMapping("/registration")
     public ResponseEntity<Void> signUp(@RequestBody Register register){
         HttpHeaders headers = new HttpHeaders();
+        System.out.println(register);
         headers.add("Register", "Register");
         authorizationService.registrationUser(register);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login")
-    public JwtAuthenticationResponse signIn(@RequestBody SignInRequest signInRequest){
-        return authorizationService.signIn(signInRequest);
+    public ResponseEntity<JwtAuthenticationResponse> signIn(@RequestBody SignInRequest signInRequest){
+       JwtAuthenticationResponse  jwtTokens = authorizationService.signIn(signInRequest);
+       return ResponseEntity.ok()
+               .header("AccessToken", jwtTokens.getAccessToken())
+               .header("RefreshToken", jwtTokens.getRefreshToken())
+               .build();
     }
 
     @GetMapping("update")
