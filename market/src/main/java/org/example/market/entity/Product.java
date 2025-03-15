@@ -1,13 +1,7 @@
 package org.example.market.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -15,25 +9,28 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Table(name = "products",schema = "products")
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long productId;
-
+    @Column(name = "product_name")
     private String productName;
 
+    @Column(name = "category_product")
     private String categoryProduct;
 
+    @Column(name = "quantity")
     private Long quantity;
 
+    @Column(name = "product_price")
     private BigDecimal productPrice;
 
-    public Product(String productName, Long quantity, BigDecimal productPrice) {
-        this.productName = productName;
-        this.quantity = quantity;
-        this.productPrice = productPrice;
-    }
+    @ManyToOne(fetch = FetchType.LAZY,targetEntity = User.class)
+    private User user;
 
 
 }

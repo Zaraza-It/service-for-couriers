@@ -11,8 +11,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ProductResponseDTO {
 
-        private Long productId;
-
         private String productName;
 
         private Long quantity;

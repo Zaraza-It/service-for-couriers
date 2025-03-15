@@ -1,50 +1,46 @@
 package org.example.market.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.example.market.dto.ProductResponseDTO;
+import org.example.market.dto.request.ProductRequest;
 import org.example.market.entity.Product;
 import org.example.market.service.MarketService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RestController
+@RequiredArgsConstructor
 public class ProductsController {
 
     private final MarketService marketService;
 
-    public ProductsController(MarketService marketService) {
-        this.marketService = marketService;
 
-    }
 
     @GetMapping("/products")
-    public List<ProductResponseDTO> getAllProducts () {
-        return marketService.getAllProducts().stream()
-                .map(ProductResponseDTO::new)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<ProductResponseDTO>> getAllProducts () {
+        return ResponseEntity.ok(marketService.getAllProducts().stream().toList());
+
     }
 
     @PostMapping("/products/create")
-    public Long createProduct (String productName, Long quantity, BigDecimal productPrice) {
-        return marketService.createProduct(
-                productName,
-                quantity,
-                productPrice
-        );
+    public ResponseEntity<Void> createProduct (
+     @NotBlank @RequestHeader(name = "AccessToken") String accessToken,
+      @Valid @RequestBody ProductRequest request) {
+         marketService.createProduct(accessToken,request);
+         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/filter/")
-    public ResponseEntity<List<Product>> filterProductsBy (@RequestParam String categoryProduct) {
+    public ResponseEntity<List<Product>> filterProductsBy (@NotBlank @RequestParam String categoryProduct) {
       List<Product> products = marketService.filterProductByCategory(categoryProduct);
       ResponseEntity.ok(products);
+
+        return null;
     }
 
 
