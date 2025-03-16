@@ -1,5 +1,6 @@
 package org.example.market.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -27,20 +28,18 @@ public class ProductsController {
 
     }
 
-    @PostMapping("/products/create")
+    @PostMapping("/create")
     public ResponseEntity<Void> createProduct (
      @NotBlank @RequestHeader(name = "AccessToken") String accessToken,
       @Valid @RequestBody ProductRequest request) {
          marketService.createProduct(accessToken,request);
-         return ResponseEntity.ok().build();
+         return ResponseEntity.ok().body().build();
     }
 
     @GetMapping("/filter/")
     public ResponseEntity<List<Product>> filterProductsBy (@NotBlank @RequestParam String categoryProduct) {
       List<Product> products = marketService.filterProductByCategory(categoryProduct);
-      ResponseEntity.ok(products);
-
-        return null;
+        return ResponseEntity.ok(products);
     }
 
 
