@@ -39,8 +39,7 @@ public class User implements UserDetails {
 
 
 
-    @OneToMany
-    @JoinColumn(name = "products_id")
+    @OneToMany(mappedBy = "user")
     private Set<Product> product = new HashSet<Product>();
 
 

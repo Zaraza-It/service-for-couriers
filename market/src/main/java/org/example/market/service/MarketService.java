@@ -36,6 +36,7 @@ public class MarketService {
     public void createProduct (@NotBlank String accessToken, @Valid ProductRequest request) {
        try {
            final String username =  jwtService.getAccessClaims(accessToken).getSubject();
+           logger.info(username);
            if (userRepository.findByUsername(username) != null) {
               Product product = Product.builder()
                        .categoryProduct(request.getCategoryProduct())
@@ -46,8 +47,10 @@ public class MarketService {
               List<Product> products = new ArrayList<>();
               products.add(product);
               User user = userRepository.findByUsername(username);
-              user.setProduct(products);
-              userRepository.save(user);
+              logger.info(user.getUsername());
+              product.setUser(user);
+              productsRepository.save(product);
+
            }
        } catch (Exception e){
            logger.error(e);

@@ -29,8 +29,8 @@ public class Product {
     @Column(name = "product_price")
     private BigDecimal productPrice;
 
-    @ManyToOne
-    @JoinTable(name = "user_id")
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
     private User user;
 
 
