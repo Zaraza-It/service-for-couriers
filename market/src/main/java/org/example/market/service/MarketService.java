@@ -16,7 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +43,7 @@ public class MarketService {
                        .productName(request.getProductName())
                        .quantity(request.getQuantity())
                        .build();
-              Set<Product> products = new HashSet<>();
+              List<Product> products = new ArrayList<>();
               products.add(product);
               User user = userRepository.findByUsername(username);
               user.setProduct(products);

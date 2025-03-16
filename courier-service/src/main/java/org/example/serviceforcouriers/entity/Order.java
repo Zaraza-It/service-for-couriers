@@ -3,16 +3,18 @@ package org.example.serviceforcouriers.entity;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.serviceforcouriers.enums.Status;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-@NoArgsConstructor
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
-@Table(name = "orders")
 @Getter
 @Setter
+@Table(name = "orders")
 public class Order {
 
     @Id
@@ -23,38 +25,16 @@ public class Order {
 
     private String customerName;
 
+    @Nullable
     private String executorName;
 
     private String address;
 
     private OffsetDateTime offsetDateTime;
 
-    private BigDecimal purchasesPrice;
+    private BigDecimal price;
 
-    private BigDecimal purchasesSell;
+    private Status status;
 
-    private String soldStatus;
 
-    public Order(String product, String customerName, String executorName, String address,
-                 OffsetDateTime offsetDateTime, BigDecimal purchasesPrice, BigDecimal purchasesSell, String soldStatus) {
-        this.product = product;
-        this.customerName = customerName;
-        this.executorName = executorName;
-        this.address = address;
-        this.offsetDateTime = offsetDateTime;
-        this.purchasesPrice = purchasesPrice;
-        this.purchasesSell = purchasesSell;
-        this.soldStatus = soldStatus;
-    }
-
-    public Order(Long orderId, String product, String customerName, String executorName, String address, BigDecimal purchasesPrice, BigDecimal purchasesSell, String soldStatus) {
-        this.orderId = orderId;
-        this.product = product;
-        this.customerName = customerName;
-        this.executorName = executorName;
-        this.address = address;
-        this.purchasesPrice = purchasesPrice;
-        this.purchasesSell = purchasesSell;
-        this.soldStatus = soldStatus;
-    }
 }
