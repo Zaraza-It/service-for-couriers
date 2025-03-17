@@ -12,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Entity
@@ -33,17 +34,12 @@ public class User implements UserDetails {
     @Column(name = "email")
     private String email;
 
-    private int balance;
+    private BigDecimal balance;
 
     @Enumerated(EnumType.STRING)
     @CollectionTable(name ="roles",joinColumns = @JoinColumn(name = "user_id"))
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Role> roles;
-
-    @Column(name = "status_user_product")
-    @Enumerated(EnumType.STRING)
-    @Nullable
-    private StatusUser statusUser;
 
     @OneToMany(mappedBy = "user")
     private Set<Product> product = new HashSet<Product>();
