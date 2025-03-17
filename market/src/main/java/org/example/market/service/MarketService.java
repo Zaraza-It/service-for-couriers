@@ -69,7 +69,38 @@ logger.error(e);
 }
 
 
+public void deleteProductByUser(Long id,String token) {
+   try {
+      String username =  jwtService.getAccessClaims(token).getSubject();
+      if (userRepository.findByUsername(username) != null) {
+          User user = userRepository.findByUsername(username);
+          logger.info(user.getUsername());
+          if (productsRepository.findAllByUser(user) != null ) {
+             List<Product> products = productsRepository.findAllByUser(user);
+             logger.info(products.getFirst().getProductId());
+             Long idSearch = searchProduct(products, id);
+              logger.info(idSearch);
 
+              if (idSearch != null) {
+                 productsRepository.deleteById(idSearch);
+             }
+          }
+      }
+   } catch (Exception e) {
+       logger.error(e);
+   }
+}
+
+public static Long searchProduct(List<Product> products,Long id) {
+        for (int i = 0; i < products.size(); i++){
+        Long result = products.get(i).getProductId();
+         if (result.equals(id)) {
+            return result;
+         } else logger.info(result + " Error");
+
+        }
+        return null;
+}
  }
 
 

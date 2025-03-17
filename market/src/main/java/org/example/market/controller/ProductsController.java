@@ -2,6 +2,7 @@ package org.example.market.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.example.market.dto.ProductResponseDTO;
 import org.example.market.dto.request.ProductRequest;
@@ -35,12 +36,12 @@ public class ProductsController {
          return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/filter/")
-    public ResponseEntity<List<Product>> filterProductsBy (@NotBlank @RequestParam String categoryProduct) {
-      List<Product> products = marketService.filterProductByCategory(categoryProduct);
-      ResponseEntity.ok(products);
-
-        return null;
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteProduct (
+     @NotBlank @RequestHeader(name = "AccessToken") String token,
+     @RequestHeader("Id") Long id) {
+        marketService.deleteProductByUser(id,token);
+        return ResponseEntity.ok().build();
     }
 
 
