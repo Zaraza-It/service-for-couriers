@@ -1,10 +1,13 @@
 package org.example.market.entity;
 
 import jakarta.persistence.*;
+import jdk.dynalink.linker.LinkerServices;
 import lombok.*;
 import org.example.market.entity.enums.StatusProduct;
+import org.example.market.entity.enums.StatusUser;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -30,13 +33,14 @@ public class Product {
     @Column(name = "product_price")
     private BigDecimal productPrice;
 
-    @Enumerated(EnumType.STRING)
-    private StatusProduct statusProduct;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id",referencedColumnName = "user_id")
     @JoinColumn(name = "username",referencedColumnName = "username")
     private User user;
 
+
+    @OneToMany(mappedBy = "product")
+    private Set<PurchasedAndSoldProduct> purchasedProducts;
 
 }

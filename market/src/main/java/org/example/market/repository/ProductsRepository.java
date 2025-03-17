@@ -22,5 +22,5 @@ List<Product> findAllByUser(User user);
 @NativeQuery("SELECT p.product_name,p.username FROM products p")
 List<ProductDTO> findAllProducts();
 
-
+Product findProductById(Long id);
 }

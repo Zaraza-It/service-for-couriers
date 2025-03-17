@@ -8,19 +8,20 @@ import org.example.market.dto.ProductDTO;
 import org.example.market.dto.ProductResponseDTO;
 import org.example.market.dto.request.ProductRequest;
 import org.example.market.entity.Product;
+import org.example.market.entity.PurchasedAndSoldProduct;
 import org.example.market.entity.User;
+import org.example.market.entity.enums.StatusProduct;
+import org.example.market.entity.enums.StatusUser;
 import org.example.market.exceptions.ProductNotFoundException;
 import org.example.market.repository.ProductsRepository;
+import org.example.market.repository.RepositoryProductSold;
 import org.example.market.repository.UserRepository;
 import org.hibernate.query.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ public class MarketService {
     private final ProductsRepository productsRepository;
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final RepositoryProductSold repositoryProductSold;
 
     public void createProduct (@NotBlank String accessToken, @Valid ProductRequest request) {
        try {
@@ -112,7 +114,42 @@ return null;
     }
 
 
+public void buyProduct(String token,Long id,Long quantity) {
+   try {
+    String username =  jwtService.getAccessClaims(token).getSubject();
+    if (userRepository.findByUsername(username) != null) {
+        User user = userRepository.findByUsername(username);
+        Product product = productsRepository.findProductById(id);
+        if(product != null) {
+            BigDecimal productPrice = product.getProductPrice();
+            BigDecimal userBalance = user.getBalance();
+            int result =  productPrice.compareTo(userBalance;
+            if (result == -1) {
+                Long resultQuantity = product.getQuantity() - quantity;
+                product.setQuantity(resultQuantity;
+                User productOwner = userRepository.findByUsername(product.getUser().getUsername());
+                user.setBalance(userBalance.subtract(productPrice));
+                productOwner.setBalance(productOwner.getBalance().add(productPrice));
+                PurchasedAndSoldProduct purchasedAndSoldProduct = PurchasedAndSoldProduct.builder()
+                        .statusProduct(StatusProduct.PURCHASED)
+                        .buyer_id(user.getUsername())
+                        .product(product)
+                        .quantity(Math.toIntExact(resultQuantity))
+                        .usernameBuyer(username)
+                        .build();
 
+                repositoryProductSold.save(purchasedAndSoldProduct)
+                userRepository.save(user);
+                userRepository.save(productOwner);
+                productsRepository.save(product);
+
+            }
+        }
+    }
+   } catch (Exception e){
+       logger.error(e);
+   }
+}
 
  }
 
