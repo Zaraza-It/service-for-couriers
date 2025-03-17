@@ -2,6 +2,7 @@ package org.example.market.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.market.entity.enums.StatusProduct;
 
 import java.math.BigDecimal;
 
@@ -29,8 +30,12 @@ public class Product {
     @Column(name = "product_price")
     private BigDecimal productPrice;
 
+    @Enumerated(EnumType.STRING)
+    private StatusProduct statusProduct;
+
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",referencedColumnName = "user_id")
+    @JoinColumn(name = "username",referencedColumnName = "username")
     private User user;
 
 

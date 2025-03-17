@@ -21,13 +21,6 @@ public class ProductsController {
     private final MarketService marketService;
 
 
-
-    @GetMapping("/products")
-    public ResponseEntity<List<ProductResponseDTO>> getAllProducts () {
-        return ResponseEntity.ok(marketService.getAllProducts().stream().toList());
-
-    }
-
     @PostMapping("/products/create")
     public ResponseEntity<Void> createProduct (
      @NotBlank @RequestHeader(name = "AccessToken") String accessToken,
@@ -36,7 +29,7 @@ public class ProductsController {
          return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/product/delete")
     public ResponseEntity<Void> deleteProduct (
      @NotBlank @RequestHeader(name = "AccessToken") String token,
      @RequestHeader("Id") Long id) {
@@ -44,6 +37,15 @@ public class ProductsController {
         return ResponseEntity.ok().build();
     }
 
+  @GetMapping("/product/get")
+  public ResponseEntity<List> getAllProduct(){
+   return ResponseEntity.ok()
+           .body(marketService.getAllProducts());
+  }
 
+//@PutMapping
+//public ResponseEntity<Void> updateProduct (@NotBlank @RequestHeader("AccessToken") String token) {
+
+    // }
 
 }

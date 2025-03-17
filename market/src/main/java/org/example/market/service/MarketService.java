@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.example.market.dto.ProductDTO;
 import org.example.market.dto.ProductResponseDTO;
 import org.example.market.dto.request.ProductRequest;
 import org.example.market.entity.Product;
@@ -28,10 +29,6 @@ public class MarketService {
     private final ProductsRepository productsRepository;
     private final JwtService jwtService;
     private final UserRepository userRepository;
-
-    public Optional<ProductResponseDTO> getAllProducts () {
-        return productsRepository.findAllProducts();
-    }
 
     public void createProduct (@NotBlank String accessToken, @Valid ProductRequest request) {
        try {
@@ -84,6 +81,7 @@ public void deleteProductByUser(Long id,String token) {
               if (idSearch != null) {
                  productsRepository.deleteById(idSearch);
              }
+              else logger.info("Product not found");
           }
       }
    } catch (Exception e) {
@@ -101,6 +99,21 @@ public static Long searchProduct(List<Product> products,Long id) {
         }
         return null;
 }
+
+
+public List getAllProducts() {
+try {
+    List<ProductDTO> products = productsRepository.findAllProducts();
+        return products;
+}catch (Exception e){
+    logger.error(e);
+}
+return null;
+    }
+
+
+
+
  }
 
 
