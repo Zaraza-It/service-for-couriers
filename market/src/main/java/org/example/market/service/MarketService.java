@@ -28,7 +28,7 @@ public class MarketService {
     private final SoldProductRepository soldProductRepository;
 
 
-    public void createProduct (@NotBlank String accessToken, @Valid ProductRequest request) {
+public void createProduct (@NotBlank String accessToken, @Valid ProductRequest request) {
        try {
            final String username =  jwtService.getAccessClaims(accessToken).getSubject();
            logger.info(username);
@@ -121,31 +121,42 @@ public void buyProduct(String token,Long id,Integer quantity) {
             BigDecimal userBalance = user.getBalance();
             int result =  productPrice.compareTo(userBalance);
             if (result == -1) {
-                Integer resultQuantity = product.getQuantity() - quantity;
-                product.setQuantity(Math.toIntExact(resultQuantity));
-                User productOwner = userRepository.findByUsername(product.getUser().getUsername());
-                user.setBalance(userBalance.subtract(productPrice));
-                productOwner.setBalance(productOwner.getBalance().add(productPrice));
-                SoldProduct soldProduct = SoldProduct.builder()
-                        .nameSeller(productOwner.getUsername())
-                        .nameBuyer(user.getUsername())
-                        .product(product)
-                        .id_buyer(user.getId())
-                        .id_seller(productOwner.getId())
-                        .quantity(resultQuantity)
-                        .build();
-                soldProductRepository.save(soldProduct);
-                userRepository.save(user);
-                userRepository.save(productOwner);
-                productsRepository.save(product);
-
-            }
-        }
-    }
+                if (quantity <= product.getQuantity() && product.getQuantity() > 0) {
+                    Integer resultQuantity = product.getQuantity() - quantity;
+                    product.setQuantity(resultQuantity);
+                    User productOwner = userRepository.findByUsername(product.getUser().getUsername());
+                    if (productOwner != user) {
+                        user.setBalance(userBalance.subtract(productPrice));
+                        productOwner.setBalance(productOwner.getBalance().add(productPrice));
+                        SoldProduct soldProduct = SoldProduct.builder()
+                                .nameSeller(productOwner.getUsername())
+                                .nameBuyer(user.getUsername())
+                                .product(product)
+                                .id_buyer(user.getId())
+                                .id_seller(productOwner.getId())
+                                .quantity(resultQuantity)
+                                .build();
+                        soldProductRepository.save(soldProduct);
+                        userRepository.save(user);
+                        userRepository.save(productOwner);
+                    } else throw new Exception("Вы не можете купить свой товар!");
+                } else if (product.getQuantity().equals(0)) {
+                    productsRepository.delete(product);
+                throw new Exception("Увы... Товар закончился!!");} else throw new Exception("Вы указали недоступное количество товара");
+            } else throw new Exception("Недостаточно денег для данного товара!");
+        } else throw new Exception("Продукт не найден!");
+    } else throw new Exception("Ваш username не валидный!");
    } catch (Exception e){
        logger.error(e);
    }
 }
+
+
+public void updateProduct() {
+
+}
+
+
 
  }
 

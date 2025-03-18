@@ -24,4 +24,11 @@ List<Product> findAllByUser(User user);
 List<ProductDTO> findAllProducts();
 
 Product findProductByProductId(Long id);
+
+@NativeQuery("SELECT COUNT(*) > 0 AS exists\n" +
+        "FROM products\n" +
+        "WHERE product_id = ? AND username = ?;")
+boolean findProductByIdAndUsername(Long id, String username);
+
+
 }
