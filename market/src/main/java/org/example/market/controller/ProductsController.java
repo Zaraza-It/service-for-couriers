@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.example.market.dto.ProductResponseDTO;
 import org.example.market.dto.request.ProductRequest;
+import org.example.market.dto.request.ProductUpdateRequest;
 import org.example.market.entity.Product;
 import org.example.market.service.MarketService;
 import org.springframework.http.ResponseEntity;
@@ -57,8 +58,12 @@ public class ProductsController {
 
 
 @PutMapping("/update/")
-public ResponseEntity<Void> updateProduct (@NotBlank @RequestHeader("AccessToken") String token) {
-
-    // }
+public ResponseEntity<String > updateProduct (
+        @NotBlank @RequestHeader("AccessToken") String token,
+        @Valid @RequestBody ProductUpdateRequest request,
+        @Positive @RequestParam Long id) {
+    marketService.updateProduct(id,token,request);
+    return ResponseEntity.ok("Товар успешно обновлён!");
+    }
 
 }

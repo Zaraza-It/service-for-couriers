@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.market.dto.ProductDTO;
 import org.example.market.dto.request.ProductRequest;
+import org.example.market.dto.request.ProductUpdateRequest;
 import org.example.market.entity.Product;
 import org.example.market.entity.SoldProduct;
 import org.example.market.entity.User;
@@ -152,8 +153,30 @@ public void buyProduct(String token,Long id,Integer quantity) {
 }
 
 
-public void updateProduct() {
-
+public void updateProduct(Long id, String token, ProductUpdateRequest request) {
+    try {
+    final String username =  jwtService.getAccessClaims(token).getSubject();
+    if (userRepository.findByUsername(username) != null) {
+       Product product = productsRepository.findProductByUsernameAndProductId(username,id);
+        if (product != null) {
+            if (request.getProductName() != null) {
+                product.setProductName(request.getProductName());
+            }
+            if (request.getQuantity() != null) {
+                product.setQuantity(request.getQuantity());
+            }
+            if (request.getPrice() != null) {
+                product.setProductPrice(request.getPrice());
+            }
+            if (request.getCategoryProduct() != null) {
+                product.setCategoryProduct(request.getCategoryProduct());
+            }
+        productsRepository.save(product);
+        } else throw new Exception("Товар не найден!");
+    } else throw new Exception("Пользователь не найден");
+    } catch (Exception e){
+        logger.error(e);
+    }
 }
 
 
