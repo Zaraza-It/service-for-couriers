@@ -13,6 +13,6 @@ public class ProductRequest {
     private String productName;
     @NotEmpty
     private String categoryProduct;
-    private Long quantity;
+    private Integer quantity;
     private BigDecimal productPrice;
 }
