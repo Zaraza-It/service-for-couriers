@@ -127,23 +127,42 @@ public void buyProduct(String token,Long id,Integer quantity) {
                     product.setQuantity(resultQuantity);
                     User productOwner = userRepository.findByUsername(product.getUser().getUsername());
                     if (productOwner != user) {
-                        user.setBalance(userBalance.subtract(productPrice));
-                        productOwner.setBalance(productOwner.getBalance().add(productPrice));
-                        SoldProduct soldProduct = SoldProduct.builder()
-                                .nameSeller(productOwner.getUsername())
-                                .nameBuyer(user.getUsername())
-                                .product(product)
-                                .id_buyer(user.getId())
-                                .id_seller(productOwner.getId())
-                                .quantity(resultQuantity)
-                                .build();
-                        soldProductRepository.save(soldProduct);
-                        userRepository.save(user);
-                        userRepository.save(productOwner);
+                        if (productOwner.getBalance() != null) {
+                            productOwner.setBalance(productOwner.getBalance().add(productPrice));
+                            BigDecimal resultBalance =  userBalance.subtract(productPrice);
+                            user.setBalance(resultBalance);
+                            SoldProduct soldProduct = SoldProduct.builder()
+                                    .nameSeller(productOwner.getUsername())
+                                    .nameBuyer(user.getUsername())
+                                    .product(product)
+                                    .id_buyer(user.getId())
+                                    .id_seller(productOwner.getId())
+                                    .quantity(quantity)
+                                    .build();
+                            soldProductRepository.save(soldProduct);
+                            userRepository.save(user);
+                            userRepository.save(productOwner);
+                        } else {
+                            BigDecimal balance = BigDecimal.valueOf(0);
+                            productOwner.setBalance(balance);
+                            BigDecimal resultBalance =  userBalance.subtract(productPrice);
+                            user.setBalance(resultBalance);
+                            productOwner.setBalance(productOwner.getBalance().add(productPrice));
+                            product.setUser(user);
+                            SoldProduct soldProduct = SoldProduct.builder()
+                                    .nameSeller(productOwner.getUsername())
+                                    .nameBuyer(user.getUsername())
+                                    .product(product)
+                                    .id_buyer(user.getId())
+                                    .id_seller(productOwner.getId())
+                                    .quantity(resultQuantity)
+                                    .build();
+                            soldProductRepository.save(soldProduct);
+                            userRepository.save(user);
+                            userRepository.save(productOwner);
+                        }
                     } else throw new Exception("Вы не можете купить свой товар!");
-                } else if (product.getQuantity().equals(0)) {
-                    productsRepository.delete(product);
-                throw new Exception("Увы... Товар закончился!!");} else throw new Exception("Вы указали недоступное количество товара");
+                } else  throw new Exception("Увы... Товар закончился!!");
             } else throw new Exception("Недостаточно денег для данного товара!");
         } else throw new Exception("Продукт не найден!");
     } else throw new Exception("Ваш username не валидный!");
@@ -151,7 +170,8 @@ public void buyProduct(String token,Long id,Integer quantity) {
        logger.error(e);
    }
 }
-
+//if (product.getQuantity().equals(0)) {
+//                    soldProductRepository.delete();
 
 public void updateProduct(Long id, String token, ProductUpdateRequest request) {
     try {
