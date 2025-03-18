@@ -114,7 +114,7 @@ return null;
 public void buyProduct(String token,Long id,Integer quantity) {
    try {
     String username =  jwtService.getAccessClaims(token).getSubject();
-    if (userRepository.findByUsername(username) != null) {
+        if (userRepository.findByUsername(username) != null) {
         User user = userRepository.findByUsername(username);
         Product product = productsRepository.findProductByProductId(id);
         if(product != null) {
@@ -122,12 +122,12 @@ public void buyProduct(String token,Long id,Integer quantity) {
             BigDecimal userBalance = user.getBalance();
             int result =  productPrice.compareTo(userBalance);
             if (result == -1) {
-                if (quantity <= product.getQuantity() && product.getQuantity() > 0) {
+            if (quantity <= product.getQuantity() && product.getQuantity() > 0) {
                     Integer resultQuantity = product.getQuantity() - quantity;
                     product.setQuantity(resultQuantity);
                     User productOwner = userRepository.findByUsername(product.getUser().getUsername());
-                    if (productOwner != user) {
-                        if (productOwner.getBalance() != null) {
+            if (productOwner != user) {
+            if (productOwner.getBalance() != null) {
                             productOwner.setBalance(productOwner.getBalance().add(productPrice));
                             BigDecimal resultBalance =  userBalance.subtract(productPrice);
                             user.setBalance(resultBalance);
@@ -138,6 +138,7 @@ public void buyProduct(String token,Long id,Integer quantity) {
                                     .id_buyer(user.getId())
                                     .id_seller(productOwner.getId())
                                     .quantity(quantity)
+                                    .uniqueId(generateUnId())
                                     .build();
                             soldProductRepository.save(soldProduct);
                             userRepository.save(user);
@@ -156,6 +157,7 @@ public void buyProduct(String token,Long id,Integer quantity) {
                                     .id_buyer(user.getId())
                                     .id_seller(productOwner.getId())
                                     .quantity(resultQuantity)
+                                    .uniqueId(generateUnId())
                                     .build();
                             soldProductRepository.save(soldProduct);
                             userRepository.save(user);
@@ -173,12 +175,13 @@ public void buyProduct(String token,Long id,Integer quantity) {
 //if (product.getQuantity().equals(0)) {
 //                    soldProductRepository.delete();
 
-public void updateProduct(Long id, String token, ProductUpdateRequest request) {
+public void updateProduct(Long productId, String token, ProductUpdateRequest request) {
     try {
     final String username =  jwtService.getAccessClaims(token).getSubject();
     if (userRepository.findByUsername(username) != null) {
-       Product product = productsRepository.findProductByUsernameAndProductId(username,id);
+       Product product = productsRepository.findProductByUsernameAndProductId(username,productId);
         if (product != null) {
+            logger.info(product);
             if (request.getProductName() != null) {
                 product.setProductName(request.getProductName());
             }
@@ -198,6 +201,15 @@ public void updateProduct(Long id, String token, ProductUpdateRequest request) {
         logger.error(e);
     }
 }
+
+public static String generateUnId() {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 15; i++) {
+            sb.append(random.nextInt(10));
+        }
+        return sb.toString();
+    }
 
 
 

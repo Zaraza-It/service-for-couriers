@@ -31,7 +31,7 @@ boolean findProductByIdAndUsername(Long id, String username);
 
 
 @NativeQuery("SELECT * FROM products WHERE username = :username AND product_id = :productId")
-Product findProductByUsernameAndProductId(@Param("username") String username,@Param("product_id") Long productId);
+Product findProductByUsernameAndProductId(@Param("username") String username,@Param("productI   d") Long productId);
 
 
 //SELECT COUNT(*) > 0 AS exists

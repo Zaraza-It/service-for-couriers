@@ -25,6 +25,8 @@ public class SoldProduct {
 
     private String nameSeller;
 
+    private String uniqueId;
+
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumns({
             @JoinColumn(name = "product_price", referencedColumnName = "product_price"),
