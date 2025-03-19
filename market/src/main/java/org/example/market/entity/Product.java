@@ -45,4 +45,8 @@ public class Product {
 
     @OneToMany(mappedBy = "product",targetEntity = SoldProduct.class)
     private Set<SoldProduct> soldProducts;
+
+    @OneToMany(mappedBy = "image",targetEntity = Image.class)
+    private Set<Product> products;
+
 }

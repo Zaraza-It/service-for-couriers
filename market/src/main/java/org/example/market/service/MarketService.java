@@ -211,7 +211,9 @@ public static String generateUnId() {
         return sb.toString();
     }
 
+public void addImageInProduct() {
 
+}
 
  }
 
