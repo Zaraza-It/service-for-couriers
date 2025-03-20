@@ -5,20 +5,16 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.market.dto.ProductDTO;
-import org.example.market.dto.ProductResponseDTO;
 import org.example.market.dto.request.ProductRequest;
+import org.example.market.dto.request.ProductUpdateRequest;
 import org.example.market.entity.Product;
-import org.example.market.entity.PurchasedAndSoldProduct;
+import org.example.market.entity.SoldProduct;
 import org.example.market.entity.User;
 import org.example.market.entity.enums.StatusProduct;
-import org.example.market.entity.enums.StatusUser;
-import org.example.market.exceptions.ProductNotFoundException;
 import org.example.market.repository.ProductsRepository;
-import org.example.market.repository.RepositoryProductSold;
+import org.example.market.repository.SoldProductRepository;
 import org.example.market.repository.UserRepository;
-import org.hibernate.query.Order;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.NativeWebRequest;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -30,9 +26,10 @@ public class MarketService {
     private final ProductsRepository productsRepository;
     private final JwtService jwtService;
     private final UserRepository userRepository;
-    private final RepositoryProductSold repositoryProductSold;
+    private final SoldProductRepository soldProductRepository;
 
-    public void createProduct (@NotBlank String accessToken, @Valid ProductRequest request) {
+
+public void createProduct (@NotBlank String accessToken, @Valid ProductRequest request) {
        try {
            final String username =  jwtService.getAccessClaims(accessToken).getSubject();
            logger.info(username);
@@ -114,41 +111,108 @@ return null;
     }
 
 
-public void buyProduct(String token,Long id,Long quantity) {
+public void buyProduct(String token,Long id,Integer quantity) {
    try {
     String username =  jwtService.getAccessClaims(token).getSubject();
-    if (userRepository.findByUsername(username) != null) {
+        if (userRepository.findByUsername(username) != null) {
         User user = userRepository.findByUsername(username);
-        Product product = productsRepository.findProductById(id);
+        Product product = productsRepository.findProductByProductId(id);
         if(product != null) {
             BigDecimal productPrice = product.getProductPrice();
             BigDecimal userBalance = user.getBalance();
-            int result =  productPrice.compareTo(userBalance;
+            int result =  productPrice.compareTo(userBalance);
             if (result == -1) {
-                Long resultQuantity = product.getQuantity() - quantity;
-                product.setQuantity(resultQuantity;
-                User productOwner = userRepository.findByUsername(product.getUser().getUsername());
-                user.setBalance(userBalance.subtract(productPrice));
-                productOwner.setBalance(productOwner.getBalance().add(productPrice));
-                PurchasedAndSoldProduct purchasedAndSoldProduct = PurchasedAndSoldProduct.builder()
-                        .statusProduct(StatusProduct.PURCHASED)
-                        .buyer_id(user.getUsername())
-                        .product(product)
-                        .quantity(Math.toIntExact(resultQuantity))
-                        .usernameBuyer(username)
-                        .build();
-
-                repositoryProductSold.save(purchasedAndSoldProduct)
-                userRepository.save(user);
-                userRepository.save(productOwner);
-                productsRepository.save(product);
-
-            }
-        }
-    }
+            if (quantity <= product.getQuantity() && product.getQuantity() > 0) {
+                    Integer resultQuantity = product.getQuantity() - quantity;
+                    product.setQuantity(resultQuantity);
+                    User productOwner = userRepository.findByUsername(product.getUser().getUsername());
+            if (productOwner != user) {
+            if (productOwner.getBalance() != null) {
+                            productOwner.setBalance(productOwner.getBalance().add(productPrice));
+                            BigDecimal resultBalance =  userBalance.subtract(productPrice);
+                            user.setBalance(resultBalance);
+                            SoldProduct soldProduct = SoldProduct.builder()
+                                    .nameSeller(productOwner.getUsername())
+                                    .nameBuyer(user.getUsername())
+                                    .product(product)
+                                    .id_buyer(user.getId())
+                                    .id_seller(productOwner.getId())
+                                    .quantity(quantity)
+                                    .uniqueId(generateUnId())
+                                    .build();
+                            soldProductRepository.save(soldProduct);
+                            userRepository.save(user);
+                            userRepository.save(productOwner);
+                        } else {
+                            BigDecimal balance = BigDecimal.valueOf(0);
+                            productOwner.setBalance(balance);
+                            BigDecimal resultBalance =  userBalance.subtract(productPrice);
+                            user.setBalance(resultBalance);
+                            productOwner.setBalance(productOwner.getBalance().add(productPrice));
+                            product.setUser(user);
+                            SoldProduct soldProduct = SoldProduct.builder()
+                                    .nameSeller(productOwner.getUsername())
+                                    .nameBuyer(user.getUsername())
+                                    .product(product)
+                                    .id_buyer(user.getId())
+                                    .id_seller(productOwner.getId())
+                                    .quantity(resultQuantity)
+                                    .uniqueId(generateUnId())
+                                    .build();
+                            soldProductRepository.save(soldProduct);
+                            userRepository.save(user);
+                            userRepository.save(productOwner);
+                        }
+                    } else throw new Exception("Вы не можете купить свой товар!");
+                } else  throw new Exception("Увы... Товар закончился!!");
+            } else throw new Exception("Недостаточно денег для данного товара!");
+        } else throw new Exception("Продукт не найден!");
+    } else throw new Exception("Ваш username не валидный!");
    } catch (Exception e){
        logger.error(e);
    }
+}
+//if (product.getQuantity().equals(0)) {
+//                    soldProductRepository.delete();
+
+public void updateProduct(Long productId, String token, ProductUpdateRequest request) {
+    try {
+    final String username =  jwtService.getAccessClaims(token).getSubject();
+    if (userRepository.findByUsername(username) != null) {
+       Product product = productsRepository.findProductByUsernameAndProductId(username,productId);
+        if (product != null) {
+            logger.info(product);
+            if (request.getProductName() != null) {
+                product.setProductName(request.getProductName());
+            }
+            if (request.getQuantity() != null) {
+                product.setQuantity(request.getQuantity());
+            }
+            if (request.getPrice() != null) {
+                product.setProductPrice(request.getPrice());
+            }
+            if (request.getCategoryProduct() != null) {
+                product.setCategoryProduct(request.getCategoryProduct());
+            }
+        productsRepository.save(product);
+        } else throw new Exception("Товар не найден!");
+    } else throw new Exception("Пользователь не найден");
+    } catch (Exception e){
+        logger.error(e);
+    }
+}
+
+public static String generateUnId() {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 15; i++) {
+            sb.append(random.nextInt(10));
+        }
+        return sb.toString();
+    }
+
+public void addImageInProduct() {
+
 }
 
  }

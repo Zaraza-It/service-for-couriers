@@ -2,6 +2,7 @@ package org.example.market.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,10 @@ public class ProductRequest {
     private String productName;
     @NotEmpty
     private String categoryProduct;
-    private Long quantity;
+    @Positive
+    @NotNull
+    private Integer quantity;
+    @Positive
+    @NotNull
     private BigDecimal productPrice;
 }
