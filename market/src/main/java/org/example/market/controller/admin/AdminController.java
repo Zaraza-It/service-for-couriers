@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin/")
 public class AdminController {
 
-    @PostMapping("/edit/product/")
-public ResponseEntity<Void> editProduct() {
+  //  @PostMapping("/edit/product/")
+//public ResponseEntity<Void> editProduct() {
 
-    }
+  //  }
 
 }

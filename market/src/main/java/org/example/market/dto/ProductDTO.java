@@ -21,10 +21,13 @@ public class ProductDTO {
     @Column(name = "username")
     private String username;
 
+    private byte[] image;
+
 @PersistenceCreator
     public ProductDTO() {
        this.productName =  productName;
         this.username = username;
+        this.image = image;
     }
 
 }

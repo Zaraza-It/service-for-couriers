@@ -46,7 +46,10 @@ public class Product {
     @OneToMany(mappedBy = "product",targetEntity = SoldProduct.class)
     private Set<SoldProduct> soldProducts;
 
-    @OneToMany(mappedBy = "image",targetEntity = Image.class)
-    private Set<Product> products;
+    @OneToOne(cascade =CascadeType.ALL,targetEntity = Image.class)
+    @JoinColumns({
+    @JoinColumn(name = "image_id",referencedColumnName = "id"),
+    @JoinColumn(name = "image_data", referencedColumnName = "image_data")})
+    private Product products;
 
 }

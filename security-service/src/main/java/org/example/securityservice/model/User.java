@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -28,7 +29,7 @@ private String password;
 @Nullable
 @Column(name = "email")
 private String email;
-
+private BigDecimal balance;
 
 @Enumerated(EnumType.STRING)
 @CollectionTable(name ="roles",joinColumns = @JoinColumn(name = "user_id"))

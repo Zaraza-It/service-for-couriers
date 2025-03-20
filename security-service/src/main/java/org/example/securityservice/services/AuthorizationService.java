@@ -14,7 +14,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -27,17 +29,19 @@ public class AuthorizationService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
+    @Transactional
     public void registrationUser(Register register) {
         try {
             User usernameInUser = userRepository.findByUsername(register.getUsername());
             if (usernameInUser == null) {
+                BigDecimal balance = BigDecimal.valueOf(1000);
                 User user = new User();
                 user.setUsername(register.getUsername());
                 logger.info(register.getUsername());
                 user.setPassword(passwordEncoder.encode(register.getPassword()));
                 logger.info(register.getPassword());
                 user.setRoles(Collections.singleton(RoleEnum.ROLE_USER));
-
+                user.setBalance(balance);
                 userRepository.save(user);
                 logger.info(register.getUsername() + "Done");
 
@@ -48,7 +52,7 @@ public class AuthorizationService {
         }
     }
 
-
+    @Transactional
     public JwtAuthenticationResponse signIn(SignInRequest signInRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
             signInRequest.getUsername(),

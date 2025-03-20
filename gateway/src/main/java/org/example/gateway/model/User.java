@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +33,8 @@ public class User implements UserDetails {
     @Nullable
     @Column(name = "email")
     private String email;
+
+    private BigDecimal balance;
 
     @CollectionTable(name = "user_roles",joinColumns = @JoinColumn(name = "user_id"))
     @ElementCollection(fetch = FetchType.EAGER)

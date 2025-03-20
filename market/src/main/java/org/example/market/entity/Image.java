@@ -1,10 +1,16 @@
 package org.example.market.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JoinColumnOrFormula;
 
 @Table(name = "image")
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,7 +18,7 @@ public class Image {
     @Lob @Column(name = "image_data")
     private byte[] imageData;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
     private Product product;
 }

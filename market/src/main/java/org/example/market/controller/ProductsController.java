@@ -11,28 +11,33 @@ import org.example.market.dto.request.ProductRequest;
 import org.example.market.dto.request.ProductUpdateRequest;
 import org.example.market.entity.Product;
 import org.example.market.service.MarketService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/products")
 public class ProductsController {
 
     private final MarketService marketService;
 
 
-    @PostMapping("/products/create")
+    @PostMapping("/create/")
     public ResponseEntity<Void> createProduct (
       @NotBlank @RequestHeader(name = "AccessToken") String accessToken,
-      @Valid @RequestBody ProductRequest request) {
-         marketService.createProduct(accessToken,request);
+      @Valid @RequestBody ProductRequest request,
+      @RequestParam MultipartFile file) {
+         marketService.createProduct(accessToken,request,file);
          return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/product/delete")
+    @DeleteMapping("/delete/")
     public ResponseEntity<Void> deleteProduct (
     @NotBlank @RequestHeader(name = "AccessToken") String token,
     @Positive @RequestHeader("Id") Long id) {
@@ -40,7 +45,7 @@ public class ProductsController {
         return ResponseEntity.ok().build();
     }
 
-  @GetMapping("/product/get")
+  @GetMapping("/get")
   public ResponseEntity<List> getAllProduct(){
   return ResponseEntity.ok()
          .body(marketService.getAllProducts());

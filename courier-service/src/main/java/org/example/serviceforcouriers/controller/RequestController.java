@@ -1,6 +1,8 @@
 package org.example.serviceforcouriers.controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.example.serviceforcouriers.dto.request.CreateRequestChangeStatusDTO;
 import org.example.serviceforcouriers.dto.request.ResponseChangeStatusDTO;
@@ -22,7 +24,7 @@ public class RequestController {
 
     @PostMapping("/request")
     public ResponseEntity<Void> createRequest(@NotBlank @RequestHeader(name = "AccessToken") String token,
-                                              @RequestBody final CreateRequestChangeStatusDTO requestDto) {
+                                            @Valid @RequestBody final CreateRequestChangeStatusDTO requestDto) {
         requestService.create(token, requestDto);
         return ResponseEntity.ok().build();
     }
@@ -35,7 +37,7 @@ public class RequestController {
     }
 
     @GetMapping("/request/{requestId}")
-    public ResponseEntity<ResponseChangeStatusDTO> getRequestById(@PathVariable Long requestId) {
+    public ResponseEntity<ResponseChangeStatusDTO> getRequestById(@Positive @PathVariable Long requestId) {
         return ResponseEntity.ok(
                 new ResponseChangeStatusDTO(requestService.getById(requestId))
         );

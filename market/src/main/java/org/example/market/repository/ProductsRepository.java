@@ -21,7 +21,7 @@ List<Product>findAllByCategoryProduct(String categoryProduct);
 List<Product> findAllByUser(User user);
 
 
-@NativeQuery("SELECT p.product_name,p.username FROM products p")
+@NativeQuery("SELECT p.product_name,p.username,p.image_data FROM products p")
 List<ProductDTO> findAllProducts();
 
 Product findProductByProductId(Long id);
