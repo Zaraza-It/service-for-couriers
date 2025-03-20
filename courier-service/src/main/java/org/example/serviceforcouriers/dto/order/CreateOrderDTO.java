@@ -1,7 +1,5 @@
-package org.example.serviceforcouriers.dto;
+package org.example.serviceforcouriers.dto.order;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.serviceforcouriers.enums.Status;

@@ -1,11 +1,9 @@
-package org.example.serviceforcouriers.dto;
+package org.example.serviceforcouriers.dto.order;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.example.serviceforcouriers.entity.User;
 import org.example.serviceforcouriers.enums.Status;
-
-import java.math.BigDecimal;
 
 @Setter
 @Getter

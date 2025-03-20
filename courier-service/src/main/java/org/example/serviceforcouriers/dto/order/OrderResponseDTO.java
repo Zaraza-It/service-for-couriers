@@ -1,4 +1,4 @@
-package org.example.serviceforcouriers.dto;
+package org.example.serviceforcouriers.dto.order;
 
 import lombok.Data;
 import org.example.serviceforcouriers.entity.Order;

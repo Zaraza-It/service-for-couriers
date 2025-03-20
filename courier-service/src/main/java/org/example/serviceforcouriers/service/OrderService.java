@@ -1,8 +1,7 @@
 package org.example.serviceforcouriers.service;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.example.serviceforcouriers.dto.CreateOrderDTO;
+import org.example.serviceforcouriers.dto.order.CreateOrderDTO;
 import org.example.serviceforcouriers.entity.Order;
 import org.example.serviceforcouriers.entity.User;
 import org.example.serviceforcouriers.enums.Status;
@@ -10,25 +9,26 @@ import org.example.serviceforcouriers.exceptions.OrderNotFoundException;
 import org.example.serviceforcouriers.exceptions.UserNotFoundException;
 import org.example.serviceforcouriers.repository.OrderRepository;
 import org.example.serviceforcouriers.repository.UserRepository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 
 import static java.util.Objects.nonNull;
 
 @RequiredArgsConstructor
+@Service
 public class OrderService {
 
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final JwtService jwtService;
 
-    public void create (String token, @RequestBody CreateOrderDTO order) {
+    public void create(String token, @RequestBody CreateOrderDTO order) {
         if (nonNull(jwtService.getAccessClaims(token).getSubject())) {
-             orderRepository.save(new Order(
+            orderRepository.save(new Order(
                     order.getOrderId(),
                     order.getProduct(),
                     order.getCustomerName(),
@@ -41,11 +41,11 @@ public class OrderService {
         }
     }
 
-    public List<Order> getAll () {
+    public List<Order> getAll() {
         return orderRepository.findAll();
     }
 
-    public Order getById (Long orderId) {
+    public Order getById(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Аккаунт с данным id не был найден"));
     }
@@ -56,12 +56,12 @@ public class OrderService {
     }
 
     @Transactional
-    public void changeAddress (Long orderId, String address) {
+    public void changeAddress(Long orderId, String address) {
         getById(orderId).setAddress(address);
     }
 
     @Transactional
-    public void changeUser (Long orderId, User user) {
+    public void changeUser(Long orderId, User user) {
         getById(orderId).setUser(user);
     }
 
