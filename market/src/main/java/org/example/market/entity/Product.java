@@ -48,8 +48,8 @@ public class Product {
 
     @OneToOne(cascade =CascadeType.ALL,targetEntity = Image.class)
     @JoinColumns({
-    @JoinColumn(name = "image_id",referencedColumnName = "id"),
-    @JoinColumn(name = "image_data", referencedColumnName = "image_data")})
-    private Product products;
+    @JoinColumn(name = "image_id",referencedColumnName = "id",nullable = true),
+    @JoinColumn(name = "image_data", referencedColumnName = "image_data",nullable = true)})
+    private Image image;
 
 }

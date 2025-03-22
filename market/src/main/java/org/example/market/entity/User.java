@@ -37,6 +37,13 @@ public class User implements UserDetails {
 
     private BigDecimal balance;
 
+    @OneToOne(cascade = CascadeType.ALL,targetEntity = Image.class)
+
+    @JoinColumns({
+    @JoinColumn(name = "image_id", referencedColumnName = "id"),
+    @JoinColumn(name = "user_image",referencedColumnName = "image_data")})
+    private Image image;
+
     @Enumerated(EnumType.STRING)
     @CollectionTable(name ="roles",joinColumns = @JoinColumn(name = "user_id"))
     @ElementCollection(fetch = FetchType.EAGER)

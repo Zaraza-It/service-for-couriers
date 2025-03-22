@@ -25,13 +25,13 @@ public class RoleUserPredicate extends AbstractRoutePredicateFactory<RoleUserPre
             boolean isTrue = false;
             if (token == null) {
                 if (jwtService.validateAccessToken(token) == true) {
-                   if (jwtService.getAccessClaims(token).get("roles", String.class) == "ROLE_USER" && jwtService.getAccessClaims(token).get("roles", String.class) == "ROLE_ADMIN") {
+                   if (jwtService.getAccessClaims(token).get("roles", String.class).equals("ROLE_USER") && jwtService.getAccessClaims(token).get("roles", String.class).equals("ROLE_ADMIN")) {
                         isTrue = true;
                         System.out.println(jwtService.getAccessClaims(token).get("roles", String.class));
                     } else isTrue = false;
                 }
             }
-            return config.isTrue ? !isTrue : isTrue;
+            return config.isTrue ? isTrue : !isTrue;
         };
         }
 

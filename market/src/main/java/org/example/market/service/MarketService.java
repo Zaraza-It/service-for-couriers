@@ -22,6 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.awt.*;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.List;
 
@@ -34,8 +38,9 @@ public class MarketService {
     private final UserRepository userRepository;
     private final SoldProductRepository soldProductRepository;
     private final ImageRepository imageRepository;
+    private HttpClient httpClient;
 
-    public void createProduct(@NotBlank String accessToken, @Valid ProductRequest request,MultipartFile file) {
+    public void createProduct(@NotBlank String accessToken, @Valid ProductRequest request) {
         try {
             final String username = jwtService.getAccessClaims(accessToken).getSubject();
             logger.info(username);
@@ -46,13 +51,13 @@ public class MarketService {
                         .productName(request.getProductName())
                         .quantity(request.getQuantity())
                         .build();
-                    Image image = getImage(file);
-                    image.setProduct(product);
-
+                    HttpRequest httpRequest = HttpRequest.newBuilder()
+                            .uri(new URI("http://localhost:9000/test")).GET()
+                            .build();
+                    httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
                 User user = userRepository.findByUsername(username);
                 logger.info(user.getUsername());
                 product.setUser(user);
-                imageRepository.save(image);
                 productsRepository.save(product);
 
             }
@@ -234,7 +239,6 @@ public class MarketService {
         }
         return null;
     }
-
 
 
 }
