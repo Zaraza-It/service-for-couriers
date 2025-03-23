@@ -1,7 +1,9 @@
 package org.example.market.controller.user;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.example.market.dto.ResponseUserInfo;
 import org.example.market.service.ImageService;
 import org.example.market.service.JwtService;
 import org.example.market.service.ProfileService;
@@ -32,14 +34,14 @@ public ResponseEntity<String> uploadAvatarUser(
                 .body("Upload successful");
 }
 
-@GetMapping("/settings")
-public ResponseEntity<String> settingUser(@NotBlank @RequestHeader(name = "AccessToken") String token) {
-    profileService.
-}
-
 @GetMapping("/profile/{profileId}")
-public ResponseEntity<> getProfile(@PathVariable Long profileId) {
-
+public ResponseEntity<ResponseUserInfo> getProfile(
+        @Positive @PathVariable Long profileId,
+        @NotBlank @RequestHeader(name = "AccessToken") String token) {
+  ResponseUserInfo userInfo = profileService.getUserInfo(profileId,token);
+  return ResponseEntity.ok().body(userInfo);
 }
+
+
 
 }

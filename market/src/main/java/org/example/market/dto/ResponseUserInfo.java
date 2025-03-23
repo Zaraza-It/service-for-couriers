@@ -8,7 +8,13 @@ import lombok.Data;
 public class ResponseUserInfo {
     private String username;
 
-    private String sales;
+    private int sales;
 
-    private String purchases;
+    private int purchases;
+
+    private String roles;
+
+    private byte[] image;
+
+    private String quantityProducts;
 }

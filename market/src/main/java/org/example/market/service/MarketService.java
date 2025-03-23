@@ -38,7 +38,6 @@ public class MarketService {
     private final UserRepository userRepository;
     private final SoldProductRepository soldProductRepository;
     private final ImageRepository imageRepository;
-    private HttpClient httpClient;
 
     public void createProduct(@NotBlank String accessToken, @Valid ProductRequest request) {
         try {
@@ -51,15 +50,9 @@ public class MarketService {
                         .productName(request.getProductName())
                         .quantity(request.getQuantity())
                         .build();
-                    HttpRequest httpRequest = HttpRequest.newBuilder()
-                            .uri(new URI("http://localhost:9000/test")).GET()
-                            .build();
-                    httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-                User user = userRepository.findByUsername(username);
-                logger.info(user.getUsername());
-                product.setUser(user);
+                Optional<User> user = userRepository.findByUsername(username);
+                product.setUser(user.get());
                 productsRepository.save(product);
-
             }
         } catch (Exception e) {
             logger.error(e);
@@ -82,14 +75,10 @@ public class MarketService {
         try {
             String username = jwtService.getAccessClaims(token).getSubject();
             if (userRepository.findByUsername(username) != null) {
-                User user = userRepository.findByUsername(username);
-                logger.info(user.getUsername());
-                if (productsRepository.findAllByUser(user) != null) {
-                    List<Product> products = productsRepository.findAllByUser(user);
-                    logger.info(products.getFirst().getProductId());
+                Optional<User> user = userRepository.findByUsername(username);
+                if (productsRepository.findAllByUser(user.get()) != null) {
+                    List<Product> products = productsRepository.findAllByUser(user.get());
                     Long idSearch = searchProduct(products, id);
-                    logger.info(idSearch);
-
                     if (idSearch != null) {
                         productsRepository.deleteById(idSearch);
                     } else logger.info("Product not found");
@@ -112,9 +101,9 @@ public class MarketService {
     }
 
 
-    public List getAllProducts() {
+    public Optional<ProductDTO> getAllProducts() {
         try {
-            List<ProductDTO> products = productsRepository.findAllProducts();
+            Optional<ProductDTO> products = productsRepository.findAllProducts();
             return products;
         } catch (Exception e) {
             logger.error(e);
@@ -126,60 +115,9 @@ public class MarketService {
     public void buyProduct(String token, Long id, Integer quantity) {
         try {
             String username = jwtService.getAccessClaims(token).getSubject();
-            if (userRepository.findByUsername(username) != null) {
-                User user = userRepository.findByUsername(username);
-                Product product = productsRepository.findProductByProductId(id);
-                if (product != null) {
-                    BigDecimal productPrice = product.getProductPrice();
-                    BigDecimal userBalance = user.getBalance();
-                    int result = productPrice.compareTo(userBalance);
-                    if (result == -1) {
-                        if (quantity <= product.getQuantity() && product.getQuantity() > 0) {
-                            Integer resultQuantity = product.getQuantity() - quantity;
-                            product.setQuantity(resultQuantity);
-                            User productOwner = userRepository.findByUsername(product.getUser().getUsername());
-                            if (productOwner != user) {
-                                if (productOwner.getBalance() != null) {
-                                    productOwner.setBalance(productOwner.getBalance().add(productPrice));
-                                    BigDecimal resultBalance = userBalance.subtract(productPrice);
-                                    user.setBalance(resultBalance);
-                                    SoldProduct soldProduct = SoldProduct.builder()
-                                            .nameSeller(productOwner.getUsername())
-                                            .nameBuyer(user.getUsername())
-                                            .product(product)
-                                            .id_buyer(user.getId())
-                                            .id_seller(productOwner.getId())
-                                            .quantity(quantity)
-                                            .uniqueId(generateUnId())
-                                            .build();
-                                    soldProductRepository.save(soldProduct);
-                                    userRepository.save(user);
-                                    userRepository.save(productOwner);
-                                } else {
-                                    BigDecimal balance = BigDecimal.valueOf(0);
-                                    productOwner.setBalance(balance);
-                                    BigDecimal resultBalance = userBalance.subtract(productPrice);
-                                    user.setBalance(resultBalance);
-                                    productOwner.setBalance(productOwner.getBalance().add(productPrice));
-                                    product.setUser(user);
-                                    SoldProduct soldProduct = SoldProduct.builder()
-                                            .nameSeller(productOwner.getUsername())
-                                            .nameBuyer(user.getUsername())
-                                            .product(product)
-                                            .id_buyer(user.getId())
-                                            .id_seller(productOwner.getId())
-                                            .quantity(resultQuantity)
-                                            .uniqueId(generateUnId())
-                                            .build();
-                                    soldProductRepository.save(soldProduct);
-                                    userRepository.save(user);
-                                    userRepository.save(productOwner);
-                                }
-                            } else throw new Exception("Вы не можете купить свой товар!");
-                        } else throw new Exception("Увы... Товар закончился!!");
-                    } else throw new Exception("Недостаточно денег для данного товара!");
-                } else throw new Exception("Продукт не найден!");
-            } else throw new Exception("Ваш username не валидный!");
+            Optional<User> user = userRepository.findByUsername(username);
+            Optional<Product> product = productsRepository.findProductByProductId(id);
+            buyProductsAbstract(user,product,quantity);
         } catch (Exception e) {
             logger.error(e);
         }
@@ -191,24 +129,24 @@ public class MarketService {
         try {
             final String username = jwtService.getAccessClaims(token).getSubject();
             if (userRepository.findByUsername(username) != null) {
-                Product product = productsRepository.findProductByUsernameAndProductId(username, productId);
+               Optional<Product> product = productsRepository.findProductByUsernameAndProductId(username, productId);
                 if (product != null) {
                     logger.info(product);
                     if (request.getProductName() != null) {
-                        product.setProductName(request.getProductName());
+                        product.get().setProductName(request.getProductName());
                     }
                     if (request.getQuantity() != null) {
-                        product.setQuantity(request.getQuantity());
+                        product.get().setQuantity(request.getQuantity());
                     }
                     if (request.getPrice() != null) {
-                        product.setProductPrice(request.getPrice());
+                        product.get().setProductPrice(request.getPrice());
                     }
                     if (request.getCategoryProduct() != null) {
-                        product.setCategoryProduct(request.getCategoryProduct());
+                        product.get().setCategoryProduct(request.getCategoryProduct());
                     }
-                    productsRepository.save(product);
-                } else throw new Exception("Товар не найден!");
-            } else throw new Exception("Пользователь не найден");
+                    productsRepository.save(product.get());
+                }
+            }
         } catch (Exception e) {
             logger.error(e);
         }
@@ -223,22 +161,53 @@ public class MarketService {
         return sb.toString();
     }
 
-
-    public Image getImage(MultipartFile file) {
-        try {
-            if (file == null || file.isEmpty()) {
-                logger.info("image not found");
-            }
-            if(file != null) {
-                Image image = new Image();
-                image.setImageData(file.getBytes());
-                return image;
-            }
-            } catch (IOException e) {
-            logger.error(e);
-        }
-        return null;
+    public SoldProduct buildSoldProduct(
+            Optional<User> productOwner,
+            Optional<User> user,Optional<Product> product,
+            Integer resultQuantity)
+    {
+        SoldProduct soldProduct = SoldProduct.builder()
+            .nameSeller(productOwner.get().getUsername())
+            .nameBuyer(user.get().getUsername())
+            .product(product.get())
+            .id_buyer(user.get().getId())
+            .id_seller(productOwner.get().getId())
+            .quantity(resultQuantity)
+            .uniqueId(generateUnId())
+            .build();
+        return soldProduct;
     }
+
+public void buyProductsAbstract(Optional<User> user,Optional<Product> product,Integer quantity) {
+    if (product.isPresent() &&
+        user.isPresent()) {
+            BigDecimal productPrice = product.get().getProductPrice();
+            BigDecimal userBalance = user.get().getBalance();
+            int result = productPrice.compareTo(userBalance);
+
+        if (result == -1 &&
+            quantity <= product.get().getQuantity() &&
+            product.get().getQuantity() > 0) {
+                Integer resultQuantity = product.get().getQuantity() - quantity;
+                product.get().setQuantity(resultQuantity);
+                Optional<User> productOwner = userRepository.findByUsername(product.get().getUser().getUsername());
+
+            if (productOwner != user &&
+                productOwner.get().getBalance() != null) {
+                    productOwner.get().setBalance(productOwner.get().getBalance().add(productPrice));
+                    BigDecimal resultBalance = userBalance.subtract(productPrice);
+                    user.get().setBalance(resultBalance);
+
+                soldProductRepository.save(buildSoldProduct(productOwner, user, product, resultQuantity));
+                userRepository.save(user.get());
+                userRepository.save(productOwner.get());
+
+                }
+            }
+        }
+    }
+
+
 
 
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -46,12 +47,12 @@ public class ImageService {
       try {
        String username = jwtService.getAccessClaims(token).getSubject();
        if (username != null) {
-        User user = userRepository.findByUsername(username);
+       Optional<User> user = userRepository.findByUsername(username);
         Image image = Image.builder()
                 .imageName(file.getOriginalFilename())
                 .imageData(file.getBytes())
                 .build();
-        image.setUser(user);
+        image.setUser(user.get());
         imageRepository.save(image);
        }
     } catch (Exception e) {

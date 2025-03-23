@@ -22,19 +22,19 @@ List<Product> findAllByUser(User user);
 
 
 @NativeQuery("SELECT p.product_name,p.username,p.image_data FROM products p")
-List<ProductDTO> findAllProducts();
+Optional<ProductDTO> findAllProducts();
 
-Product findProductByProductId(Long id);
+Optional<Product> findProductByProductId(Long id);
 
 @NativeQuery("SELECT COUNT(*) > 0 AS exists FROM products WHERE product_id = ?")
 boolean findProductByIdAndUsername(Long id, String username);
 
 
 @NativeQuery("SELECT * FROM products WHERE username = :username AND product_id = :productId")
-Product findProductByUsernameAndProductId(@Param("username") String username,@Param("productI   d") Long productId);
+Optional<Product> findProductByUsernameAndProductId(@Param("username") String username,@Param("productI   d") Long productId);
 
 @NativeQuery("SELECT count(*)")
-Integer findAllSalesAndPurchases();
+Optional<Integer> findAllSalesAndPurchases();
 
 //SELECT COUNT(*) > 0 AS exists
 //FROM products
