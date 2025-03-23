@@ -1,11 +1,14 @@
 package org.example.market.service;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.market.dto.ResponseImageData;
+import org.example.market.dto.ResponseSettingsUser;
 import org.example.market.dto.ResponseSoldProduct;
 import org.example.market.dto.ResponseUserInfo;
+import org.example.market.dto.request.RequestSettingsUser;
 import org.example.market.entity.Image;
 import org.example.market.entity.User;
 import org.example.market.repository.ImageRepository;
@@ -19,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.nonNull;
 
 @Service
 @RequiredArgsConstructor
@@ -58,6 +63,34 @@ public class ProfileService {
             logger.error(e);
         }
         return null;
+    }
+
+
+
+
+    public ResponseSettingsUser getAndSetSettingsUser(String token, RequestSettingsUser requestSettingsUser) {
+        try {
+            String username = jwtService.getAccessClaims(token).getSubject();
+            Optional<User> user = userRepository.findByUsername(username);
+            if (username != null && user.isPresent()) {
+
+               if (nonNull(requestSettingsUser.getUsername())) {
+                    user.get().setUsername(requestSettingsUser.getUsername());
+               }
+
+               if (nonNull(requestSettingsUser.getEmail())) {
+                   user.get().setEmail(requestSettingsUser.getEmail());
+               }
+
+               userRepository.save(user.get());
+               ResponseSettingsUser resp = new ResponseSettingsUser();
+                    resp.setUsername(user.get().getUsername());
+                    resp.setEmail(requestSettingsUser.getEmail());
+               return resp;
+            }
+        }catch (Exception e) {
+            logger.error(e);
+        }
     }
         }
 

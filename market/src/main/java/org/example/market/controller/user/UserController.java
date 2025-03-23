@@ -1,9 +1,12 @@
 package org.example.market.controller.user;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.example.market.dto.ResponseSettingsUser;
 import org.example.market.dto.ResponseUserInfo;
+import org.example.market.dto.request.RequestSettingsUser;
 import org.example.market.service.ImageService;
 import org.example.market.service.JwtService;
 import org.example.market.service.ProfileService;
@@ -42,6 +45,14 @@ public ResponseEntity<ResponseUserInfo> getProfile(
   return ResponseEntity.ok().body(userInfo);
 }
 
+@GetMapping
+public ResponseEntity<ResponseSettingsUser> setUserSettings(
+        @NotBlank @RequestHeader(name = "AccessToken")String token,
+        @Valid @RequestBody RequestSettingsUser settingsUser) {
+  ResponseSettingsUser settings =  profileService
+          .getAndSetSettingsUser(token,settingsUser);
+return ResponseEntity.ok().body(settings);
+}
 
 
 }
