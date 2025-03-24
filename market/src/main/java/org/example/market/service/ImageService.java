@@ -47,13 +47,13 @@ public class ImageService {
       try {
        String username = jwtService.getAccessClaims(token).getSubject();
        if (username != null) {
-       Optional<User> user = userRepository.findByUsername(username);
-        Image image = Image.builder()
+            Optional<User> user = userRepository.findByUsername(username);
+            Image image = Image.builder()
                 .imageName(file.getOriginalFilename())
                 .imageData(file.getBytes())
                 .build();
-        image.setUser(user.get());
-        imageRepository.save(image);
+       image.setUser(user.get());
+       imageRepository.save(image);
        }
     } catch (Exception e) {
       logger.error(e);

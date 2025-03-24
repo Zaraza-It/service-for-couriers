@@ -1,4 +1,4 @@
-package org.example.market.dto;
+package org.example.market.dto.response;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;

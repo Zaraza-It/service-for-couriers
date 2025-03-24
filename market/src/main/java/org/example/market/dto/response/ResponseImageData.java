@@ -1,4 +1,4 @@
-package org.example.market.dto;
+package org.example.market.dto.response;
 
 import lombok.Data;
 

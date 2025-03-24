@@ -2,23 +2,19 @@ package org.example.market.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.example.market.dto.ProductResponseDTO;
 import org.example.market.dto.request.ProductRequest;
 import org.example.market.dto.request.ProductUpdateRequest;
-import org.example.market.entity.Product;
 import org.example.market.service.ImageService;
 import org.example.market.service.MarketService;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -46,7 +42,7 @@ public class ProductsController {
     }
 
   @GetMapping("/get")
-  public ResponseEntity<List> getAllProduct(){
+  public ResponseEntity<Optional> getAllProduct(){
   return ResponseEntity.ok()
          .body(marketService.getAllProducts());
   }
@@ -73,7 +69,7 @@ public ResponseEntity<String> updateProduct (
 
 @PostMapping("/upload")
 public ResponseEntity<String> uploadImageInProduct(
-        MultipartFile file,
+      MultipartFile file,
       @Positive Long id,
       @NotBlank @RequestHeader(name = "AccessToken") String token) {
     if (file.isEmpty()) {

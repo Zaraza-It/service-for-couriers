@@ -3,13 +3,10 @@ package org.example.market.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
-import jdk.dynalink.linker.LinkerServices;
 import lombok.*;
-import org.example.market.entity.enums.StatusProduct;
-import org.example.market.entity.enums.StatusUser;
+import org.example.market.entity.enums.ProductCategory;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -31,8 +28,9 @@ public class Product {
     private String productName;
 
     @Column(name = "category_product")
-    @Min(value = 5)
-    private String categoryProduct;
+    @Min(value = 3)
+    @Enumerated(EnumType.STRING)
+    private ProductCategory categoryProduct;
 
     @Positive
     @Column(name = "quantity")

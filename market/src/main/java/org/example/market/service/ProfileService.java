@@ -1,24 +1,20 @@
 package org.example.market.service;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.example.market.dto.ResponseImageData;
-import org.example.market.dto.ResponseSettingsUser;
-import org.example.market.dto.ResponseSoldProduct;
-import org.example.market.dto.ResponseUserInfo;
+import org.example.market.dto.response.ResponseImageData;
+import org.example.market.dto.response.ResponseSettingsUser;
+import org.example.market.dto.response.ResponseSoldProduct;
+import org.example.market.dto.response.ResponseUserInfo;
 import org.example.market.dto.request.RequestSettingsUser;
-import org.example.market.entity.Image;
 import org.example.market.entity.User;
 import org.example.market.repository.ImageRepository;
 import org.example.market.repository.SoldProductRepository;
 import org.example.market.repository.UserRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,7 +31,6 @@ public class ProfileService {
     public static final Logger logger = LogManager.getLogger(MarketService.class);
 
 
-    @Transactional
     public ResponseUserInfo getUserInfo(Long userId,String token) {
         try {
             Optional<User> user = userRepository.findById(userId);
@@ -91,6 +86,7 @@ public class ProfileService {
         }catch (Exception e) {
             logger.error(e);
         }
+        return null;
     }
         }
 
