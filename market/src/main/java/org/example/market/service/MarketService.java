@@ -31,7 +31,10 @@ public class MarketService {
     private final SoldProductRepository soldProductRepository;
     private final ImageRepository imageRepository;
 
-    public void createProduct(@NotBlank String accessToken, @Valid ProductRequest request) throws IllegalArgumentException {
+    public void createProduct(
+            @NotBlank String accessToken,
+            @Valid ProductRequest request) throws IllegalArgumentException
+    {
         try {
             final String username = jwtService.getAccessClaims(accessToken).getSubject();
             logger.info(username);
