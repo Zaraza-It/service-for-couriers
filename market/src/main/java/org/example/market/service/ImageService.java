@@ -28,13 +28,13 @@ public class ImageService {
         try {
            String username = jwtService.getAccessClaims(token).getSubject();
            if (username != null) {
-             Product product = productsRepository.findProductByUsernameAndProductId(username,id);
+            Optional<Product> product = productsRepository.findProductByUsernameAndProductId(username,id);
              if (product != null) {
                  Image image = Image.builder()
                          .imageName(file.getOriginalFilename())
                          .imageData(file.getBytes())
                          .build();
-                 image.setProduct(product);
+                 image.setProduct(product.get());
                  imageRepository.save(image);
              }
            }

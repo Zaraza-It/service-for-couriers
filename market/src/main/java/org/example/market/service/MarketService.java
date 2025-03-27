@@ -1,9 +1,13 @@
 package org.example.market.service;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.example.market.dto.EmailDTO;
+import org.example.market.dto.KafkaOrderDTO;
 import org.example.market.dto.ProductDTO;
 import org.example.market.dto.request.ProductRequest;
 import org.example.market.dto.request.ProductUpdateRequest;
@@ -15,7 +19,9 @@ import org.example.market.repository.ImageRepository;
 import org.example.market.repository.ProductsRepository;
 import org.example.market.repository.SoldProductRepository;
 import org.example.market.repository.UserRepository;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -30,6 +36,10 @@ public class MarketService {
     private final UserRepository userRepository;
     private final SoldProductRepository soldProductRepository;
     private final ImageRepository imageRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final KafkaTemplate<String, EmailDTO> kafkaTemplate;
+    private final KafkaTemplate<String, KafkaOrderDTO> orderKafkaTemplate;
+    private final KafkaSender kafkaSender;
 
     public void createProduct(
             @NotBlank String accessToken,
@@ -107,12 +117,13 @@ public class MarketService {
     }
 
 
-    public void buyProduct(String token, Long id, Integer quantity) {
+    public void buyProduct(String token, Long id, Integer quantity,String address) {
         try {
-            String username = jwtService.getAccessClaims(token).getSubject();
+            final String username = jwtService.getAccessClaims(token).getSubject();
             Optional<User> user = userRepository.findByUsername(username);
             Optional<Product> product = productsRepository.findProductByProductId(id);
-            buyProductsAbstract(user,product,quantity);
+                buyProductsAbstract(user,product,quantity,address);
+
         } catch (Exception e) {
             logger.error(e);
         }
@@ -172,34 +183,61 @@ public class MarketService {
             .build();
         return soldProduct;
     }
+@Transactional
+public void buyProductsAbstract(Optional<User> user,Optional<Product> product,Integer quantity,String address) {
+    Optional<User> productOwner = userRepository.findByUsername(product.get().getUser().getUsername());
+    BigDecimal productPrice = product.get().getProductPrice();
+    BigDecimal userBalance = user.get().getBalance();
+    Integer resultQuantity = product.get().getQuantity() - quantity;
+    BigDecimal resultQuantityAndPrice =  userBalance.multiply(BigDecimal.valueOf(quantity));
+    int resultQuantityAndPriceInt = resultQuantityAndPrice.compareTo(user.get().getBalance());
+    BigDecimal resultBalance = userBalance.subtract(resultQuantityAndPrice);
 
-public void buyProductsAbstract(Optional<User> user,Optional<Product> product,Integer quantity) {
-    if (product.isPresent() &&
-      user.isPresent()) {
-        BigDecimal productPrice = product.get().getProductPrice();
-        BigDecimal userBalance = user.get().getBalance();
-        int result = productPrice.compareTo(userBalance);
+    if (product.isPresent() && user.isPresent()) {
 
-        if (result == -1 &&
-          quantity <= product.get().getQuantity() &&
-          product.get().getQuantity() > 0) {
-             Integer resultQuantity = product.get().getQuantity() - quantity;
-             product.get().setQuantity(resultQuantity);
-             Optional<User> productOwner = userRepository.findByUsername(product.get().getUser().getUsername());
+        if (quantity <= product.get().getQuantity() &&
+            product.get().getQuantity() > 0) {
+
+              product.get().setQuantity(resultQuantity);
 
             if (productOwner != user &&
-               productOwner.get().getBalance() != null) {
-                    productOwner.get().setBalance(productOwner.get().getBalance().add(productPrice));
-                    BigDecimal resultBalance = userBalance.subtract(productPrice);
-                    user.get().setBalance(resultBalance);
+               productOwner.get().getBalance() != null &&
+               resultQuantityAndPriceInt == -1 ||
+               resultQuantityAndPriceInt == 0 ) {
+
+                 productOwner.get().setBalance(productOwner.get().getBalance().add(resultQuantityAndPrice));
+                 user.get().setBalance(resultBalance);
+
+                if (user.get().getEmail() != null) {
+                   SendEmailAboutPurchase(
+                        user.get().getUsername(),
+                        user.get().getEmail()
+                   );
+                }
+
 
                 soldProductRepository.save(buildSoldProduct(productOwner, user, product, resultQuantity));
                 userRepository.save(user.get());
                 userRepository.save(productOwner.get());
+                SendOrder(address,product.get().getProductPrice(),user.get().getUsername(),product.get().getProductName());
 
                 }
             }
         }
+    }
+
+    public void SendEmailAboutPurchase(@NotBlank String username,@Email @NotBlank String  email) {
+        EmailDTO emailDTO = new EmailDTO(username,email);
+        kafkaTemplate.send("topic1", emailDTO);
+    }
+
+    public void SendOrder(String address,BigDecimal price,String username,String productName) {
+        orderKafkaTemplate.send("topic2", KafkaOrderDTO.builder()
+                .address(address)
+                .price(price)
+                .customerName(username)
+                .product(productName)
+                .build());
     }
 
 

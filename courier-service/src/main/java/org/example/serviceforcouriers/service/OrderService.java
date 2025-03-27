@@ -71,13 +71,22 @@ public class OrderService {
     public void changeStatus(Long orderId, Status status) {
         Optional<Order> order = getById(orderId);
             if (order.isPresent()) {
-                order.get().setStatus(status);
+                order.get()
+             .setStatus(Status.valueOf(String.valueOf(status)));
             } else throw new OrderNotFoundException("Заказ не найден!");
     }
 
     @Transactional
     public void changeAddress(Long orderId, String address) {
-        orderRepository.save(getById(getById(orderId).setAddress(address)));
+        Optional<Order> order = getById(orderId);
+        if (order.isPresent()) {
+            order.get().setAddress(address);
+            try {
+                orderRepository.save(order.get());
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to save order");
+            }
+        }
     }
 
     @Transactional
@@ -85,7 +94,11 @@ public class OrderService {
         Optional<Order> order = getById(orderId);
             if (order.isPresent()) {
                 order.get().setExecutorName(userName);
-                orderRepository.save(order.get());
+                try {
+                    orderRepository.save(order.get());
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to save order");
+                }
             }
     }
 
