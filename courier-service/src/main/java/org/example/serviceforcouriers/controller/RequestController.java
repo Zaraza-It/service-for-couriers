@@ -18,45 +18,47 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/request")
 public class RequestController {
 
     private final RequestService requestService;
 
-    @PostMapping("/request")
+    @PostMapping("/")
     public ResponseEntity<Void> createRequest(@NotBlank @RequestHeader(name = "AccessToken") String token,
                                             @Valid @RequestBody final CreateRequestChangeStatusDTO requestDto) {
         requestService.create(token, requestDto);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/request{requestId}")
+    @PutMapping("/{requestId}")
     public ResponseEntity<Void> receivingAccept(@NotBlank @RequestHeader(name = "AccessToken") String token,
                                                 @PathVariable Long requestId, Status status) {
         requestService.accept(token, requestId, status);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/request/{requestId}")
+    @GetMapping("/{requestId}")
     public ResponseEntity<ResponseChangeStatusDTO> getRequestById(@Positive @PathVariable Long requestId) {
         return ResponseEntity.ok(
                 new ResponseChangeStatusDTO(requestService.getById(requestId))
         );
     }
 
-    @DeleteMapping("/request/{requestId}")
+    @DeleteMapping("/{requestId}")
     public ResponseEntity<Void> cancelRequest (@NotBlank @RequestHeader(name = "AccessToken") String token,
                                                @PathVariable Long requestId) {
         requestService.cancel(token, requestId);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/request/notaccepted")
+    @GetMapping("/notaccepted")
     public ResponseEntity<List<ResponseChangeStatusDTO>> getAllRequestNotAccept() {
         List<ResponseChangeStatusDTO> responses = convertToResponseDTOList(requestService.getAllRequestNotAccept());
         return ResponseEntity.ok(responses);
     }
+    
 
-    @GetMapping("/request/accepted")
+    @GetMapping("/accepted")
     public ResponseEntity<List<ResponseChangeStatusDTO>> getAllRequestAccept() {
         List<ResponseChangeStatusDTO> responses = convertToResponseDTOList(requestService.getAllRequestWithAccept());
         return ResponseEntity.ok(responses);
@@ -67,4 +69,6 @@ public class RequestController {
                 .map(ResponseChangeStatusDTO::new)
                 .collect(Collectors.toList());
     }
+
+
 }

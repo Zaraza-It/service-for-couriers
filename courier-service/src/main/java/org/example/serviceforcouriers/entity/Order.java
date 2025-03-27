@@ -25,6 +25,9 @@ public class Order {
 
     private String customerName;
 
+    @Nullable
+    private String executorName;
+
     private String address;
 
     private OffsetDateTime offsetDateTime;
@@ -34,19 +37,5 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @Nullable
-    @JoinColumn(name = "user_id",referencedColumnName = "user_id")
-    @JoinColumn(name = "username",referencedColumnName = "username")
-    private User user;
 
-    public Order(Long orderId, String product, String customerName, String address, OffsetDateTime offsetDateTime,
-                 BigDecimal price, Status status) {
-        this.orderId = orderId;
-        this.product = product;
-        this.customerName = customerName;
-        this.address = address;
-        this.offsetDateTime = offsetDateTime;
-        this.price = price;
-        this.status = status;
-    }
 }
