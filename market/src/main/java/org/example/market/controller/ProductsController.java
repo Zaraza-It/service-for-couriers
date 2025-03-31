@@ -10,6 +10,7 @@ import org.example.market.dto.request.ProductUpdateRequest;
 import org.example.market.service.ImageService;
 import org.example.market.service.MarketService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("products")
 public class ProductsController {
 
@@ -36,7 +38,8 @@ public class ProductsController {
     @DeleteMapping("/delete/")
     public ResponseEntity<Void> deleteProduct (
     @NotBlank @RequestHeader(name = "AccessToken") String token,
-    @Positive @RequestHeader("Id") Long id) {
+    @Positive @RequestHeader("Id") Long id,
+    @NotBlank @RequestParam("address") String address) {
         marketService.deleteProductByUser(id,token);
         return ResponseEntity.ok().build();
     }
@@ -52,8 +55,9 @@ public class ProductsController {
   public ResponseEntity<String> buyProduct(
          @NotBlank @RequestHeader(name = "AccessToken") String token,
          @NotNull @Positive @RequestParam Long id,
-         @NotNull @Positive @RequestParam Integer quantity) {
-  marketService.buyProduct(token,id,quantity);
+         @NotNull @Positive @RequestParam Integer quantity,
+         @NotBlank @RequestParam("address") String address  ) {
+  marketService.buyProduct(token,id,quantity,address);
   return ResponseEntity.ok().body("Success Buy!");
   }
 

@@ -30,30 +30,34 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         if (exchange.getRequest().getHeaders() != null) {
+
             if (exchange.getRequest().getHeaders().get("RefreshToken") != null) {
-        String refreshToken = exchange.getRequest().getHeaders().getFirst("RefreshToken");
-            if (jwtService.validateRefreshToken(refreshToken) == true) {
-                String accessToken = exchange.getRequest().getHeaders().getFirst("AccessToken");
-                if (accessToken != null) {
-                    if (jwtService.validateAccessToken(accessToken) == true) {
-                        exchange.getRequest().getPath();
-                    }
-                    else if (jwtService.validateRefreshToken(refreshToken) == true) {
-                        TokenResponse responseToken = jwtService.updateAccessTokenByRefreshToken(refreshToken);
-                        exchange.getResponse().getHeaders().set("RefreshToken", accessToken);
-                        exchange.getResponse().getHeaders().set("AccessToken", responseToken.getAccessToken());
-                        return chain.filter(exchange);
-                    } else if (exchange.getRequest().getPath().equals(url + "/auth/regitration")){
-                        exchange.getRequest().getBody();
-                        exchange.getResponse().getHeaders();
-                        exchange.getRequest().getPath();
-                    }
-                    else exchange.getResponse().getHeaders().setLocation(URI.create(url + "/auth/login"));
-                    System.out.println("Перешёл в login");
-                    exchange.getResponse().getHeaders();
-                    exchange.getRequest().getBody();
-                    exchange.getRequest().getPath();
-                    exchange.getResponse().setStatusCode(HttpStatus.OK);
+
+                final String refreshToken = exchange.getRequest().getHeaders().getFirst("RefreshToken");
+
+                if (jwtService.validateRefreshToken(refreshToken) == true) {
+
+                  final String accessToken = exchange.getRequest().getHeaders().getFirst("AccessToken");
+
+                    if (accessToken != null) {
+
+                      if (jwtService.validateAccessToken(accessToken) == true) {
+                        } else if (jwtService.validateRefreshToken(refreshToken) == true) {
+                            TokenResponse responseToken = jwtService.updateAccessTokenByRefreshToken(refreshToken);
+                            exchange.getResponse().getHeaders().set("RefreshToken", accessToken);
+                            exchange.getResponse().getHeaders().set("AccessToken", responseToken.getAccessToken());
+
+                        } else if (exchange.getRequest().getPath().equals(url + "/auth/regitration")){
+                            exchange.getRequest().getBody();
+                            exchange.getResponse().getHeaders();
+                            exchange.getRequest().getPath();
+                        }
+
+                        else exchange.getResponse().getHeaders().setLocation(URI.create(url + "/auth/login"));
+                            exchange.getResponse().getHeaders();
+                            exchange.getRequest().getBody();
+                            exchange.getRequest().getPath();
+                            exchange.getResponse().setStatusCode(HttpStatus.OK);
                 }
             }
 

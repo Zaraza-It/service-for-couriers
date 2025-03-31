@@ -1,5 +1,7 @@
 package org.example.securityservice.model;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 import org.example.securityservice.model.enums.RoleEnum;
 import org.springframework.lang.Nullable;
@@ -21,12 +23,17 @@ public class User implements UserDetails {
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 @Column(name = "user_id")
 private Long id;
+
+@Min(4)
 @Column(name = "username")
 private String username;
+@Min(5)
 @Column(name = "password")
 private String password;
+
 @Getter
 @Nullable
+@Email
 @Column(name = "email")
 private String email;
 private BigDecimal balance;

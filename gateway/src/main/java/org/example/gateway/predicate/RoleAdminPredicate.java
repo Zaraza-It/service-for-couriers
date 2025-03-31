@@ -20,16 +20,15 @@ public class RoleAdminPredicate extends AbstractRoutePredicateFactory<RoleAdminP
     public Predicate<ServerWebExchange> apply(Config config) {
         return (ServerWebExchange t) -> {
             String token = t.getRequest().getHeaders().getFirst("AccessToken");
-            boolean isTrue = false;
-            if (token == null) {
+            if (token != null) {
                 if (jwtService.validateAccessToken(token) == true) {
+
                     if (jwtService.getAccessClaims(token).get("roles", String.class).equals("ROLE_ADMIN")) {
-                        isTrue = true;
-                        System.out.println(jwtService.getAccessClaims(token).get("roles", String.class));
-                    } else isTrue = false;
+                        return true;
+                    }
                 }
             }
-            return config.isTrue ? isTrue : !isTrue;
+            return false;
         };}
 
     @Validated

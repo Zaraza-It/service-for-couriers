@@ -32,19 +32,16 @@ public class AuthorizationService {
     @Transactional
     public void registrationUser(Register register) {
         try {
-            User usernameInUser = userRepository.findByUsername(register.getUsername());
+           User usernameInUser = userRepository.findByUsername(register.getUsername());
             if (usernameInUser == null) {
                 BigDecimal balance = BigDecimal.valueOf(1000);
-                User user = new User();
-                user.setUsername(register.getUsername());
-                logger.info(register.getUsername());
-                user.setPassword(passwordEncoder.encode(register.getPassword()));
-                logger.info(register.getPassword());
-                user.setRoles(Collections.singleton(RoleEnum.ROLE_USER));
-                user.setBalance(balance);
-                userRepository.save(user);
-                logger.info(register.getUsername() + "Done");
 
+                User user = new User();
+                    user.setUsername(register.getUsername());
+                    user.setPassword(passwordEncoder.encode(register.getPassword()));
+                    user.setRoles(Collections.singleton(RoleEnum.ROLE_USER));
+                    user.setBalance(balance);
+                userRepository.save(user);
             } else logger.info("Username already in use");
         }
         catch (Exception e) {

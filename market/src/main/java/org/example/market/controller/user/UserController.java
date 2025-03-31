@@ -22,37 +22,37 @@ import java.io.IOException;
 public class UserController {
 private final ImageService imageService;
 private final ProfileService profileService;
-    private final JwtService jwtService;
 
     @PostMapping("/upload")
-public ResponseEntity<String> uploadAvatarUser(
-        @NotBlank @RequestHeader(name = "AccessToken") String token,
-        MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
+    public ResponseEntity<String> uploadAvatarUser(
+            @NotBlank @RequestHeader(name = "AccessToken") String token,
+            MultipartFile file) throws IOException {
+            if (file.isEmpty()) {
+                return ResponseEntity.ok()
+                        .body("File is empty");
+            }
+            imageService.addAvatarUser(token,file);
             return ResponseEntity.ok()
-                    .body("File is empty");
-        }
-        imageService.addAvatarUser(token,file);
-        return ResponseEntity.ok()
-                .body("Upload successful");
-}
+                    .body("Upload successful");
+    }
 
-@GetMapping("/profile/{profileId}")
-public ResponseEntity<ResponseUserInfo> getProfile(
-        @Positive @PathVariable Long profileId,
-        @NotBlank @RequestHeader(name = "AccessToken") String token) {
-  ResponseUserInfo userInfo = profileService.getUserInfo(profileId,token);
-  return ResponseEntity.ok().body(userInfo);
-}
+    @GetMapping("/profile/{profileId}")
+    public ResponseEntity<ResponseUserInfo> getProfile(
+            @Positive @PathVariable Long profileId,
+            @NotBlank @RequestHeader(name = "AccessToken") String token) {
+      ResponseUserInfo userInfo = profileService.getUserInfo(profileId,token);
+      return ResponseEntity.ok().body(userInfo);
+    }
 
-@GetMapping
-public ResponseEntity<ResponseSettingsUser> setUserSettings(
-        @NotBlank @RequestHeader(name = "AccessToken")String token,
-        @Valid @RequestBody RequestSettingsUser settingsUser) {
-  ResponseSettingsUser settings =  profileService
-          .getAndSetSettingsUser(token,settingsUser);
-return ResponseEntity.ok().body(settings);
-}
+    @GetMapping("/settings")
+    public ResponseEntity<ResponseSettingsUser> setUserSettings(
+            @NotBlank @RequestHeader(name = "AccessToken")String token,
+            @Valid @RequestBody RequestSettingsUser settingsUser) {
+      ResponseSettingsUser settings =  profileService
+              .getAndSetSettingsUser(token,settingsUser);
+    return ResponseEntity.ok().body(settings);
+    }
+
 
 
 }

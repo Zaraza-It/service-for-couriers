@@ -24,6 +24,7 @@ import static java.util.Objects.nonNull;
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
+
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final ImageRepository imageRepository;
@@ -61,13 +62,11 @@ public class ProfileService {
     }
 
 
-
-
     public ResponseSettingsUser getAndSetSettingsUser(String token, RequestSettingsUser requestSettingsUser) {
         try {
             String username = jwtService.getAccessClaims(token).getSubject();
             Optional<User> user = userRepository.findByUsername(username);
-            if (username != null && user.isPresent()) {
+               if (username != null && user.isPresent()) {
 
                if (nonNull(requestSettingsUser.getUsername())) {
                     user.get().setUsername(requestSettingsUser.getUsername());
@@ -88,6 +87,8 @@ public class ProfileService {
         }
         return null;
     }
+
+
         }
 
 

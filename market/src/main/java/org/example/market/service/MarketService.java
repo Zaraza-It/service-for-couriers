@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,11 +16,14 @@ import org.example.market.entity.Product;
 import org.example.market.entity.SoldProduct;
 import org.example.market.entity.User;
 import org.example.market.entity.enums.ProductCategory;
+import org.example.market.exception.NotFoundUserException;
 import org.example.market.repository.ImageRepository;
 import org.example.market.repository.ProductsRepository;
 import org.example.market.repository.SoldProductRepository;
 import org.example.market.repository.UserRepository;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,30 +43,33 @@ public class MarketService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final KafkaTemplate<String, EmailDTO> kafkaTemplate;
     private final KafkaTemplate<String, KafkaOrderDTO> orderKafkaTemplate;
-    private final KafkaSender kafkaSender;
 
     public void createProduct(
-            @NotBlank String accessToken,
-            @Valid ProductRequest request) throws IllegalArgumentException
-    {
-        try {
-            final String username = jwtService.getAccessClaims(accessToken).getSubject();
-            logger.info(username);
-            if (userRepository.findByUsername(username) != null) {
+            final String username,
+            @Valid final ProductRequest request
+    ) {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isEmpty()) {
+            throw new NotFoundUserException("User not found");
+        }
+        Product product = Product.builder()
+                .categoryProduct(validProductCategory(request.getCategoryProduct()))
+                .productPrice(request.getProductPrice())
+                .productName(request.getProductName())
+                .quantity(request.getQuantity())
+                .user(user.get())
+                .build();
 
-                Product product = Product.builder()
-                        .categoryProduct(ProductCategory.valueOf(request.getCategoryProduct()))
-                        .productPrice(request.getProductPrice())
-                        .productName(request.getProductName())
-                        .quantity(request.getQuantity())
-                        .build();
-                Optional<User> user = userRepository.findByUsername(username);
-                product.setUser(user.get());
-                productsRepository.save(product);
-            }
+        productsRepository.save(product);
+    }
+
+    private ProductCategory validProductCategory(String category) {
+        try {
+            return ProductCategory.valueOf(category);
         } catch (Exception e) {
             logger.error(e);
         }
+        return null;
     }
 
     public List<Product> filterProductByCategory(String categoryProduct) {
@@ -75,34 +82,30 @@ public class MarketService {
         return null;
     }
 
-
-    public void deleteProductByUser(Long id, String token) {
-        try {
-            String username = jwtService.getAccessClaims(token).getSubject();
-            if (userRepository.findByUsername(username) != null) {
-                Optional<User> user = userRepository.findByUsername(username);
-                if (productsRepository.findAllByUser(user.get()) != null) {
-                    List<Product> products = productsRepository.findAllByUser(user.get());
-                    Long idSearch = searchProduct(products, id);
-                    if (idSearch != null) {
-                        productsRepository.deleteById(idSearch);
-                    } else logger.info("Product not found");
-                }
-            }
-        } catch (Exception e) {
-            logger.error(e);
+    @Transactional
+    public void deleteProductByUser( final Long id, @NotBlank final String username) {
+       Optional<User> user = userRepository.findByUsername(username);
+        if (user.isEmpty()) {
+            throw new NotFoundUserException("User not found");
         }
+        List<Product> products = productsRepository.findAllByUser(user.get());
+        if (products.isEmpty()) return;
+
+        Long productId = searchProduct(products, id);
+        if (productId != null) productsRepository.deleteById(productId);
     }
 
-    public static Long searchProduct(List<Product> products, Long id) {
-        for (int i = 0; i < products.size(); i++) {
-            Long result = products.get(i).getProductId();
-            if (result.equals(id)) {
-                return result;
-            } else logger.info(result + " Error");
 
-        }
-        return null;
+    public static Long searchProduct(List<Product> products, Long id) {
+        return products.stream()
+                .filter(Objects::nonNull)
+                .filter(product -> id.equals(product.getProductId()))
+                .findFirst()
+                .map(Product::getProductId)
+                .orElseGet(() -> {
+                    logger.error("Продукт с id {} не был найден", id);
+                    return null;
+                });
     }
 
 
@@ -117,19 +120,12 @@ public class MarketService {
     }
 
 
-    public void buyProduct(String token, Long id, Integer quantity,String address) {
-        try {
-            final String username = jwtService.getAccessClaims(token).getSubject();
-            Optional<User> user = userRepository.findByUsername(username);
-            Optional<Product> product = productsRepository.findProductByProductId(id);
-                buyProductsAbstract(user,product,quantity,address);
-
-        } catch (Exception e) {
-            logger.error(e);
-        }
+    public void buyProduct(final String username, final Long id, final Integer quantity, final String address) {
+        Optional<User> user = userRepository.findByUsername(username);
+        Optional<Product> product = productsRepository.findProductByProductId(id);
+        buyProductsAbstract(user, product, quantity, address);
     }
-//if (product.getQuantity().equals(0)) {
-//                    soldProductRepository.delete();
+
 
     public void updateProduct(Long productId, String token, ProductUpdateRequest request) throws IllegalArgumentException {
         try {
@@ -183,10 +179,10 @@ public class MarketService {
             .build();
         return soldProduct;
     }
+
 @Transactional
 public void buyProductsAbstract(Optional<User> user,Optional<Product> product,Integer quantity,String address) {
     Optional<User> productOwner = userRepository.findByUsername(product.get().getUser().getUsername());
-    BigDecimal productPrice = product.get().getProductPrice();
     BigDecimal userBalance = user.get().getBalance();
     Integer resultQuantity = product.get().getQuantity() - quantity;
     BigDecimal resultQuantityAndPrice =  userBalance.multiply(BigDecimal.valueOf(quantity));
@@ -195,25 +191,29 @@ public void buyProductsAbstract(Optional<User> user,Optional<Product> product,In
 
     if (product.isPresent() && user.isPresent()) {
 
-        if (quantity <= product.get().getQuantity() &&
-            product.get().getQuantity() > 0) {
+        if (quantity <= product.get().getQuantity()
+            && product.get().getQuantity() > 0) {
 
               product.get().setQuantity(resultQuantity);
 
-            if (productOwner != user &&
-               productOwner.get().getBalance() != null &&
-               resultQuantityAndPriceInt == -1 ||
-               resultQuantityAndPriceInt == 0 ) {
+            if (productOwner != user
+               && productOwner.get().getBalance() != null
+               && resultQuantityAndPriceInt == -1
+               || resultQuantityAndPriceInt == 0 ) {
 
-                 productOwner.get().setBalance(productOwner.get().getBalance().add(resultQuantityAndPrice));
+                 productOwner.get().setBalance(
+                    productOwner.get().getBalance()
+                   .add(resultQuantityAndPrice)
+                 );
+
                  user.get().setBalance(resultBalance);
 
-                if (user.get().getEmail() != null) {
-                   SendEmailAboutPurchase(
-                        user.get().getUsername(),
-                        user.get().getEmail()
-                   );
-                }
+                    if (user.get().getEmail() != null) {
+                       SendEmailAboutPurchase(
+                            user.get().getUsername(),
+                            user.get().getEmail()
+                       );
+                    }
 
 
                 soldProductRepository.save(buildSoldProduct(productOwner, user, product, resultQuantity));
@@ -242,8 +242,8 @@ public void buyProductsAbstract(Optional<User> user,Optional<Product> product,In
 
 
 
-}
 
+}
 
 
 

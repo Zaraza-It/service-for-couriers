@@ -56,14 +56,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (noToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
           try {
               UserDetails userDetails = userService.getUserDetailsService().loadUserByUsername(username);
-              logger.info(username);
               SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
               UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                       userDetails, null, userDetails.getAuthorities()
               );
               securityContext.setAuthentication(authenticationToken);
               SecurityContextHolder.setContext(securityContext);
-              authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+              authenticationToken.setDetails(
+               new WebAuthenticationDetailsSource()
+                       .buildDetails(request));
           } catch (NullPointerException e){
               logger.info(e.getMessage());
           }
@@ -75,24 +76,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (SecurityContextHolder.getContext().getAuthentication() == null && refreshToken != null && jwt != null ) {
             try {
             if (jwtTokensService.validateRefreshToken(refreshToken) == true) {
-                logger.info("Валид");
                     if (jwtTokensService.validateAccessToken(jwt) == true) {
-                        logger.info("AccessToken валид");
                         var usernameInToken = jwtTokensService.getAccessClaims(jwt.toString()).getSubject();
 
-                        UserDetails userDetails = userService.getUserDetailsService().loadUserByUsername(usernameInToken);
+                        UserDetails userDetails = userService.getUserDetailsService()
+                                .loadUserByUsername(usernameInToken);
 
                         SecurityContext context = SecurityContextHolder.createEmptyContext();
 
                         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities()
                         );
+
                         context.setAuthentication(authentication);
                         SecurityContextHolder.setContext(context);
-                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        authentication.setDetails(
+                          new WebAuthenticationDetailsSource()
+                                  .buildDetails(request));
 
                     } else if (jwtTokensService.validateRefreshToken(refreshToken) == true) {
-                        logger.info("Перешёл в исключение");
                         TokenResponse tokenResponse = jwtTokensService.updateAccessTokenByRefreshToken(refreshToken);
                         if (jwtTokensService.validateAccessToken(tokenResponse.getAccessToken())) {
                             var usernameInTokenNew = jwtTokensService.getAccessClaims(tokenResponse.getAccessToken()).getSubject();
