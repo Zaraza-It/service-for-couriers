@@ -16,6 +16,7 @@ import org.example.market.entity.Product;
 import org.example.market.entity.SoldProduct;
 import org.example.market.entity.User;
 import org.example.market.entity.enums.ProductCategory;
+import org.example.market.exception.NotFoundProductException;
 import org.example.market.exception.NotFoundUserException;
 import org.example.market.repository.ImageRepository;
 import org.example.market.repository.ProductsRepository;
@@ -83,7 +84,7 @@ public class MarketService {
     }
 
     @Transactional
-    public void deleteProductByUser( final Long id, @NotBlank final String username) {
+    public void deleteProductByUser( final Long id, final String username) throws NotFoundProductException {
        Optional<User> user = userRepository.findByUsername(username);
         if (user.isEmpty()) {
             throw new NotFoundUserException("User not found");
@@ -109,15 +110,13 @@ public class MarketService {
     }
 
 
-    public Optional<ProductDTO> getAllProducts() {
-        try {
-            Optional<ProductDTO> products = productsRepository.findAllProducts();
+    public List<ProductDTO> getAllProducts() {
+            List<ProductDTO> products = productsRepository.findAllProducts();
+            if (products == null || products.isEmpty()) {
+                throw new NotFoundProductException("Список продуктов пуст");
+            }
             return products;
-        } catch (Exception e) {
-            logger.error(e);
         }
-        return null;
-    }
 
 
     public void buyProduct(final String username, final Long id, final Integer quantity, final String address) {

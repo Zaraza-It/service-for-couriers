@@ -20,7 +20,7 @@ List<Product> findAllByUser(User user);
 
 
 @NativeQuery("SELECT p.product_name,p.username,p.image_data FROM products p")
-Optional<ProductDTO> findAllProducts();
+List<ProductDTO> findAllProducts();
 
 Optional<Product> findProductByProductId(Long id);
 

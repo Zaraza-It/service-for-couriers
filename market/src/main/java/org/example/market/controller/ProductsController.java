@@ -45,7 +45,7 @@ public class ProductsController {
     }
 
   @GetMapping("/get")
-  public ResponseEntity<Optional> getAllProduct(){
+  public ResponseEntity<List> getAllProduct(){
   return ResponseEntity.ok()
          .body(marketService.getAllProducts());
   }
