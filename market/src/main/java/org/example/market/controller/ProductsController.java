@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,11 +76,11 @@ public ResponseEntity<String> updateProduct (
 public ResponseEntity<String> uploadImageInProduct(
       MultipartFile file,
       @Positive Long id,
-      @NotBlank @RequestHeader(name = "AccessToken") String token) {
-    if (file.isEmpty()) {
-        return ResponseEntity.badRequest().body("Файл не найден");
-    }
-    imageService.addImageInProduct(file,token,id);
+      @NotBlank @RequestHeader(name = "username") String username) throws IOException {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("Файл не найден");
+        }
+        imageService.addImageInProduct(file,username,id);
     return ResponseEntity.ok().body("Success Upload!");
 }
 
