@@ -1,10 +1,7 @@
 package org.example.botservice;
 
-import org.example.botservice.dao.OrderRepository;
-import org.example.botservice.dto.BackDto;
+import org.example.botservice.repository.OrderRepository;
 import org.example.botservice.dto.Order;
-import org.example.botservice.dto.TableProduct;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -17,12 +14,11 @@ import java.util.UUID;
 @Service
 public class ButtonGenerator {
     private OrderRepository orderRepository;
+    List<InlineKeyboardRow> buttons = new ArrayList<>();
 
     public ButtonGenerator(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
     }
-
-    List<InlineKeyboardRow> buttons = new ArrayList<>();
 
     public InlineKeyboardMarkup inlineKeyboardMarkup(List<Order> products) {
         InlineKeyboardMarkup keyboardMarkup = InlineKeyboardMarkup
@@ -31,24 +27,25 @@ public class ButtonGenerator {
         return keyboardMarkup;
     }
 
-    public List<InlineKeyboardRow> createButtons(List<Order> products) {
+    private List<InlineKeyboardRow> createButtons(List<Order> products) {
         if (products.size() <= 10) {
             int size = 0;
-            for (int range = 10;range >= products.size(); range++) {
+            for (int range = 10; range >= products.size(); range++) {
                 buttons.addAll(generateButtons(products, size));
                 size++;
             }
             return buttons;
 
         }// else if (products.size() > 10) {}
-    return buttons;
+        return buttons;
     }
 
-public List<InlineKeyboardRow> generateButtons(List<Order> products,int size) {
+    public List<InlineKeyboardRow> generateButtons(List<Order> products, int size) {
         List<InlineKeyboardRow> list = new ArrayList<>();
-        if (orderRepository.findById(products.get(size).getOrderId()) != null && orderRepository.findCallbackByOrderId(products.get(size).getOrderId()) == false) {
+        if (orderRepository.findById(products.get(size).getOrderId()) != null
+                && orderRepository.findCallbackByOrderId(products.get(size).getOrderId()) == false) {
             UUID uuid = UUID.randomUUID();
-            Order order =  Order.builder()
+            Order order = Order.builder()
                     .orderId(products.get(size).getOrderId())
                     .product(products.get(size).getProduct())
                     .address(products.get(size).getAddress())
@@ -58,17 +55,18 @@ public List<InlineKeyboardRow> generateButtons(List<Order> products,int size) {
                     .offsetDateTime(products.get(size).getOffsetDateTime())
                     .callback(uuid)
                     .soldStatus(products.get(size).getSoldStatus())
-            .build();
+                    .build();
             list.add(new InlineKeyboardRow(InlineKeyboardButton.builder()
                     .text(products.get(size).getProduct())
                     .callbackData(uuid.toString()).build()));
             orderRepository.save(order);
-        } else if (orderRepository.findById(products.get(size).getOrderId()) != null &&  orderRepository.findCallbackByOrderId(products.get(size).getOrderId()) == true) {
+        } else if (orderRepository.findById(products.get(size).getOrderId()) != null
+                && orderRepository.findCallbackByOrderId(products.get(size).getOrderId()) == true) {
 
         }
         return list;
-}
     }
+}
 
 
 

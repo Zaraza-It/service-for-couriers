@@ -32,7 +32,6 @@ public class RequestService {
                     requestChangeStatusDTO.getNowStatus(),
                     requestChangeStatusDTO.getDesiredStatus(),
                     requestChangeStatusDTO.isAccept()
-
             ));
         } else {
             throw new UserNotFoundException();
