@@ -10,19 +10,11 @@ import java.time.OffsetDateTime;
 @Getter
 @Setter
 public class CreateOrderDTO {
-
     private Long orderId;
-
     private String product;
-
     private String customerName;
-
     private String address;
-
     private OffsetDateTime offsetDateTime;
-
     private BigDecimal price;
-
     private Status status;
-
 }

@@ -13,13 +13,17 @@ public class RequestChangeStatus {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long requestId;
 
+    @Column(name = "order_id")
     private Long orderId;
 
+    @Column(name = "now_status")
     private Status nowStatus;
 
+    @Column(name = "desired_status")
     private Status desiredStatus;
 
-    private boolean accept;
+    @Column(name = "accept")
+    private boolean accept; //по хорошему нужно назвать accepted
 
     public RequestChangeStatus(Long orderId, Status nowStatus, Status desiredStatus, boolean accept) {
         this.orderId = orderId;

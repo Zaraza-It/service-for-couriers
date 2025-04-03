@@ -15,15 +15,14 @@ import java.security.Key;
 @Service
 public class JwtService {
     Logger logger = LogManager.getLogger(JwtService.class);
+
     @Value("${token.signing.key}")
     String signingKey;
-
 
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(signingKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
 
     public Key secretCode() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(signingKey));
@@ -45,6 +44,4 @@ public class JwtService {
     public Claims getAccessClaims(@NonNull String token) {
         return extractAllClaims(token);
     }
-
-
 }
