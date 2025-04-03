@@ -1,16 +1,13 @@
 package org.example.serviceforcouriers.dto.kafka;
 
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.serviceforcouriers.enums.Status;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
 
 @Data
 @AllArgsConstructor
@@ -31,5 +28,4 @@ public class KafkaOrderDTO {
 
     @Positive
     private BigDecimal price;
-
 }

@@ -12,8 +12,10 @@ public class CreateRequestChangeStatusDTO {
 
     @Positive
     private Long requestId;
+
     @Positive
     private Long orderId;
+
     @NotBlank
     private Status nowStatus;
 

@@ -22,18 +22,19 @@ public class KafkaConsumer {
     @Value("${spring.kafka.bootstrap-servers}")
     public String BOOTSTRAP_SERVERS;
 
-@Bean
-public ConsumerFactory<String, KafkaOrderDTO> consumerFactory(){
-    Map<String , Object> props = new HashMap<>();
-    props.put(
-        ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-            BOOTSTRAP_SERVERS);
-    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-            JsonDeserializer.class);
-    return new DefaultKafkaConsumerFactory<>(props,
-            new StringDeserializer(),
-            new JsonDeserializer<>());
-}
+    @Bean
+    public ConsumerFactory<String, KafkaOrderDTO> consumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                BOOTSTRAP_SERVERS);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                JsonDeserializer.class);
+        return new DefaultKafkaConsumerFactory<>(props,
+                new StringDeserializer(),
+                new JsonDeserializer<>());
+    }
+
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, KafkaOrderDTO> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, KafkaOrderDTO> factory = new ConcurrentKafkaListenerContainerFactory<>();
