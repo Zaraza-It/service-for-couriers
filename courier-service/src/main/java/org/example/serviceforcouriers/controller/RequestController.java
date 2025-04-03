@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/request")
 public class RequestController {
-
     private final RequestService requestService;
 
     @PostMapping("/")
