@@ -84,8 +84,8 @@ public class MarketService {
     }
 
     @Transactional
-    public void deleteProductByUser( final Long id, final String username) throws NotFoundProductException {
-       Optional<User> user = userRepository.findByUsername(username);
+    public void deleteProductByUser(final Long id, final String username) throws NotFoundProductException {
+        Optional<User> user = userRepository.findByUsername(username);
         if (user.isEmpty()) {
             throw new NotFoundUserException("User not found");
         }
@@ -111,12 +111,12 @@ public class MarketService {
 
 
     public List<ProductDTO> getAllProducts() {
-            List<ProductDTO> products = productsRepository.findAllProducts();
-            if (products == null || products.isEmpty()) {
-                throw new NotFoundProductException("Список продуктов пуст");
-            }
-            return products;
+        List<ProductDTO> products = productsRepository.findAllProducts();
+        if (products == null || products.isEmpty()) {
+            throw new NotFoundProductException("Список продуктов пуст");
         }
+        return products;
+    }
 
 
     public void buyProduct(final String username, final Long id, final Integer quantity, final String address) {
@@ -126,32 +126,29 @@ public class MarketService {
     }
 
 
-    public void updateProduct(Long productId, String token, ProductUpdateRequest request) throws IllegalArgumentException {
-        try {
-            final String username = jwtService.getAccessClaims(token).getSubject();
-            if (userRepository.findByUsername(username) != null) {
-               Optional<Product> product = productsRepository.findProductByUsernameAndProductId(username, productId);
-                if (product != null) {
-                    logger.info(product);
-                    if (request.getProductName() != null) {
-                        product.get().setProductName(request.getProductName());
-                    }
-                    if (request.getQuantity() != null) {
-                        product.get().setQuantity(request.getQuantity());
-                    }
-                    if (request.getPrice() != null) {
-                        product.get().setProductPrice(request.getPrice());
-                    }
-                    if (request.getCategoryProduct() != null) {
-                        product.get().setCategoryProduct(ProductCategory.valueOf(request.getCategoryProduct()));
-                    }
-                    productsRepository.save(product.get());
+    public void updateProduct(final Long productId, final String username, ProductUpdateRequest request) throws IllegalArgumentException {
+            Optional<Product> product = productsRepository.findProductByUsernameAndProductId(username, productId);
+            if (userRepository.findByUsername(username).isPresent()
+                    && product.isPresent()) {
+
+                if (request.getProductName() != null) {
+                    product.get().setProductName(request.getProductName());
                 }
+                if (request.getQuantity() != null) {
+                    product.get().setQuantity(request.getQuantity());
+                }
+                if (request.getPrice() != null) {
+                    product.get().setProductPrice(request.getPrice());
+                }
+                if (request.getCategoryProduct() != null) {
+                    product.get().setCategoryProduct(ProductCategory.valueOf(request.getCategoryProduct()));
+                }
+                productsRepository.save(product.get());
             }
-        } catch (Exception e) {
-            logger.error(e);
         }
-    }
+
+
+
 
     public static String generateUnId() {
         Random random = new Random();

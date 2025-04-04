@@ -1,6 +1,7 @@
 package org.example.securityservice.service;
 
 import org.example.market.dto.ProductDTO;
+import org.example.market.dto.request.ProductUpdateRequest;
 import org.example.market.entity.Product;
 import org.example.market.entity.User;
 import org.example.market.entity.enums.ProductCategory;
@@ -30,6 +31,23 @@ import static org.mockito.Mockito.*;
 public class MarketServiceTest  {
     private ProductDTO product;
     private ProductDTO product2;
+    private Product product3;
+    private ProductUpdateRequest productUpdateRequest;
+
+    @Mock
+    private ProductsRepository productsRepository;
+
+    @InjectMocks
+    private MarketService marketService;
+
+    @Mock
+    private SoldProductRepository soldProductRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private User user;
 
     @BeforeEach
     void setUp() {
@@ -40,17 +58,8 @@ public class MarketServiceTest  {
         ProductDTO product2 = new ProductDTO();
         product2.setProductName("test2");
         product2.setUsername("test2");
+
     }
-
-
-    @Mock
-    private ProductsRepository productsRepository;
-
-    @InjectMocks
-    private MarketService marketService;
-
-    @Mock
-    private SoldProductRepository soldProductRepository;
 
 
     @Test
@@ -76,11 +85,5 @@ public class MarketServiceTest  {
         assertEquals(2, result.size());
         verify(productsRepository, times(1)).findAllProducts();
    }
-
-@Test
-void BuyProduct() {
-
-}
-
 
 }
