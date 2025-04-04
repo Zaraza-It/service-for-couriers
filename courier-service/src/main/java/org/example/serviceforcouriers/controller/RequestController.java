@@ -16,55 +16,49 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/request")
 public class RequestController {
     private final RequestService requestService;
 
     @PostMapping
-    public ResponseEntity<Void> createRequest(@NotBlank @RequestHeader(name = "AccessToken") String token,
+    public void createRequest(@NotBlank @RequestHeader(name = "AccessToken") String token,
                                             @Valid @RequestBody final CreateRequestChangeStatusDTO requestDto) {
         requestService.create(token, requestDto);
-        return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{requestId}")
-    public ResponseEntity<Void> receivingAccept(@NotBlank @RequestHeader(name = "AccessToken") String token,
-                                                @PathVariable Long requestId, Status status) {
-        requestService.accept(token, requestId, status);
-        return ResponseEntity.ok().build();
-    }
+//    @PutMapping("/{requestId}")
+//    public void receivingAccept(@NotBlank @RequestHeader(name = "AccessToken") String token,
+//                                                @PathVariable Long requestId, Status status) {
+//        requestService.accept(token, requestId, status);
+//    }
 
-    @GetMapping("/{requestId}")
-    public ResponseEntity<ResponseChangeStatusDTO> getRequestById(@Positive @PathVariable Long requestId) {
-        return ResponseEntity.ok(
-                new ResponseChangeStatusDTO(requestService.getById(requestId))
-        );
-    }
+//    @GetMapping("/{requestId}")
+//    public ResponseChangeStatusDTO getRequestById(@Positive @PathVariable Long requestId) {
+//        return requestService.getById(requestId);
+//    }
 
     @DeleteMapping("/{requestId}")
-    public ResponseEntity<Void> cancelRequest (@NotBlank @RequestHeader(name = "AccessToken") String token,
+    public void cancelRequest (@NotBlank @RequestHeader(name = "AccessToken") String token,
                                                @PathVariable Long requestId) {
         requestService.cancel(token, requestId);
-        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/notaccepted")
-    public ResponseEntity<List<ResponseChangeStatusDTO>> getAllRequestNotAccept() {
-        List<ResponseChangeStatusDTO> responses = convertToResponseDTOList(requestService.getAllRequestNotAccept());
-        return ResponseEntity.ok(responses);
-    }
+//    @GetMapping("/notaccepted")
+//    public List<ResponseChangeStatusDTO> getAllRequestNotAccept() {
+//        return convertToResponseDTOList(requestService.getAllRequestNotAccept());
+//    }
 
-    @GetMapping("/accepted")
-    public ResponseEntity<List<ResponseChangeStatusDTO>> getAllRequestAccept() {
-        List<ResponseChangeStatusDTO> responses = convertToResponseDTOList(requestService.getAllRequestWithAccept());
-        return ResponseEntity.ok(responses);
-    }
+//    @GetMapping("/accepted")
+//    public List<ResponseChangeStatusDTO> getAllRequestAccept() {
+//        return convertToResponseDTOList(requestService.getAllRequestWithAccept());
+//    }
 
-    private List<ResponseChangeStatusDTO> convertToResponseDTOList(List<RequestChangeStatus> requestChangeStatusList) {
-        return requestChangeStatusList.stream()
-                .map(ResponseChangeStatusDTO::new)
-                .collect(Collectors.toList());
-    }
+//    TODO: переносим эту логику в service; +вместо конструктора для преобразования в дто используем mapstruct
+//    private List<ResponseChangeStatusDTO> convertToResponseDTOList(List<RequestChangeStatus> requestChangeStatusList) {
+//        return requestChangeStatusList.stream()
+//                .map(ResponseChangeStatusDTO::new)
+//                .collect(Collectors.toList());
+//    }
 }
