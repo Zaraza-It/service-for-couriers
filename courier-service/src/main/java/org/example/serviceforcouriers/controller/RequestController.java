@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class RequestController {
     private final RequestService requestService;
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<Void> createRequest(@NotBlank @RequestHeader(name = "AccessToken") String token,
                                             @Valid @RequestBody final CreateRequestChangeStatusDTO requestDto) {
         requestService.create(token, requestDto);
@@ -55,7 +55,6 @@ public class RequestController {
         List<ResponseChangeStatusDTO> responses = convertToResponseDTOList(requestService.getAllRequestNotAccept());
         return ResponseEntity.ok(responses);
     }
-    
 
     @GetMapping("/accepted")
     public ResponseEntity<List<ResponseChangeStatusDTO>> getAllRequestAccept() {
@@ -68,6 +67,4 @@ public class RequestController {
                 .map(ResponseChangeStatusDTO::new)
                 .collect(Collectors.toList());
     }
-
-
 }

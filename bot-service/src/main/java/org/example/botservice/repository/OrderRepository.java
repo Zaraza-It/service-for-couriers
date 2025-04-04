@@ -1,4 +1,4 @@
-package org.example.botservice.dao;
+package org.example.botservice.repository;
 
 import jakarta.persistence.Table;
 import org.example.botservice.dto.BackDto;

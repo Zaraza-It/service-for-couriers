@@ -6,13 +6,7 @@ import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.PersistenceCreator;
 @AllArgsConstructor
 @Setter
+@Getter
 public class TableProduct {
-
     private String product;
-
-    public String getProduct() {
-        return product;
-    }
-
-
 }

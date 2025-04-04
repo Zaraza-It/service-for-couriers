@@ -15,3 +15,6 @@ spring:
       hibernate:
         generate_statistics:
           true
+
+telegram:
+  bot-token: 7429114213:AAE2-zlkX3fzcYUMyqxyFU83cJKMTLLXXyc
