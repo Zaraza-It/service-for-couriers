@@ -11,9 +11,8 @@ import java.time.OffsetDateTime;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-@Getter
-@Setter
+@Data
+@Builder
 @Table(name = "orders")
 public class Order {
 
