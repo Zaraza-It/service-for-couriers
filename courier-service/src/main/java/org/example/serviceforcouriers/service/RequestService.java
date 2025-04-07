@@ -26,48 +26,45 @@ public class RequestService {
     private final OrderService orderService;
 
     public void create(String token, @RequestBody CreateRequestChangeStatusDTO requestChangeStatusDTO) {
-        if (nonNull(jwtService.getAccessClaims(token).getSubject())) {
-            requestRepository.save(new RequestChangeStatus(
-                    requestChangeStatusDTO.getOrderId(),
-                    requestChangeStatusDTO.getNowStatus(),
-                    requestChangeStatusDTO.getDesiredStatus(),
-                    requestChangeStatusDTO.isAccept()
-            ));
-        } else {
-            throw new UserNotFoundException();
-        }
+//        if (nonNull(jwtService.getAccessClaims(token).getSubject())) {
+//            requestRepository.save(new RequestChangeStatus(
+//                    requestChangeStatusDTO.getOrderId(),
+//                    requestChangeStatusDTO.getNowStatus(),
+//                    requestChangeStatusDTO.getDesiredStatus(),
+//                    requestChangeStatusDTO.isAccept()
+//            ));
+//        } else {
+//            throw new UserNotFoundException();
+//        }
     }
 
     public RequestChangeStatus getById(Long requestId) {
-        return requestRepository.findById(requestId).orElseThrow(() -> {
-                    throw new RequestNotFoundException();
-                }
-        );
+        return requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
     }
 
-    public List<RequestChangeStatus> getAllRequestNotAccept() {
-        return requestRepository.findAll().stream()
-                .filter(request -> !request.isAccept())
-                .collect(Collectors.toList());
-    }
+//    public List<RequestChangeStatus> getAllRequestNotAccept() {
+//        return requestRepository.findAll().stream()
+//                .filter(request -> !request.isAccept())
+//                .collect(Collectors.toList());
+//    }
+//
+//    public List<RequestChangeStatus> getAllRequestWithAccept() {
+//        return requestRepository.findAll().stream()
+//                .filter(RequestChangeStatus::isAccept)
+//                .collect(Collectors.toList());
+//    }
 
-    public List<RequestChangeStatus> getAllRequestWithAccept() {
-        return requestRepository.findAll().stream()
-                .filter(request -> request.isAccept())
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public void accept(String token, Long requestId, Status status) {
-        if (nonNull(jwtService.getAccessClaims(token).getSubject())) {
-            RequestChangeStatus request = getById(requestId);
-            request.setAccept(true);
-            Order order = orderService.getById(request.getOrderId());
-            order.setStatus(status);
-        } else {
-            throw new UserNotFoundException();
-        }
-    }
+//    @Transactional
+//    public void accept(String token, Long requestId, Status status) {
+//        if (nonNull(jwtService.getAccessClaims(token).getSubject())) {
+//            RequestChangeStatus request = getById(requestId);
+//            request.setAccept(true);
+//            Order order = orderService.getById(request.getOrderId());
+//            order.setStatus(status);
+//        } else {
+//            throw new UserNotFoundException();
+//        }
+//    }
 
     @Transactional
     public void cancel(String token, Long requestId) {
@@ -77,5 +74,4 @@ public class RequestService {
             throw new UserNotFoundException();
         }
     }
-
 }

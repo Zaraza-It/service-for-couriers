@@ -2,10 +2,12 @@ package org.example.serviceforcouriers.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.example.serviceforcouriers.enums.Status;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "requests_status")
 public class RequestChangeStatus {
 
